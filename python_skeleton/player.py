@@ -44,6 +44,14 @@ class Player(Bot):
         #big_blind = bool(active)  # True if you are the big blind
         pass
 
+#allocate cards: look at cards, create singles, all pairs, triples, flushes
+    #gets updated everytime new round
+
+    #ranks as dictionary: organize by suite
+    #singles, pairs, triples...
+    #ranks
+    #substrings?
+    #https://scrimmage.pokerbots.org/
     def handle_round_over(self, game_state, terminal_state, active):
         '''
         Called when a round ends. Called NUM_ROUNDS times.
