@@ -54,8 +54,8 @@ class Player(Bot):
         #TODO: use HOLE and TABLE_HAND to differentiate hand type scores smartly
         #TODO: give value to hands close to string (drawing hand)
         
-        #hand types: hand value from 0 to 1, intervals of 0.3 for high card, pair, two pair
-        hand_types = {"High Card": 0, "Pair": 0.6, "Two Pair": 0.7, "Trips": 1, "Straight": 1, "Flush": 1,
+        #hand types: hand value from 0 to 1, intervals of 0.2 for high card, pair, two pair
+        hand_types = {"High Card": 0, "Pair": 0.7, "Two Pair": 0.8, "Trips": 1, "Straight": 1, "Flush": 1,
                         "Full House": 1, "Quads": 1, "Straight Flush": 1}
         cur_hand_eval = [] #cur_hand held in eval7 Card class
 
@@ -65,11 +65,12 @@ class Player(Bot):
         #initialize deck,removing cards and adding to cur_hand
         deck = eval7.Deck()
         for card in my_hand:
-            deck.cards.remove(Card(card))
-            cur_hand_eval.append(Card(card))
+            deck.cards.remove(eval7.Card(card))
+            cur_hand_eval.append(eval7.Card(card))
 
         for card in table_hand:
-            deck.cards.remove(Card(card))
+            cur_hand_eval.append(eval7.Card(card))
+            deck.cards.remove(eval7.Card(card))
 
         #for each card left in the deck: add to hand, evaluate, then remove from hand
         for card in deck.cards:
@@ -86,7 +87,7 @@ class Player(Bot):
 
                 for cur_card in cur_hand_eval:
                     rank = cur_card.rank #numerical value 0 to 12, test (2, 3..A)
-                    print(rank)
+                    #print(rank)
                     #bigger card found: update max_high_card value
                     if rank > max_high_card:
                         max_high_card = rank
@@ -94,7 +95,7 @@ class Player(Bot):
 
                     #pair found, already in set: update max_pair value
                     if rank in cur_hand_orig:
-                        print("Pair found")
+                        #print("Pair found")
                         if rank > max_pair: #if bigger pair
                             max_pair = rank
 
@@ -103,10 +104,12 @@ class Player(Bot):
 
                 #based on handtype and rank of card, adjust
                 if handtype == "High Card":
-                    probability_sum += (hand_types[handtype] + max_high_card * 0.3/12) #when max, adds 0.3
+                    #print(hand_types[handtype] + max_high_card * 0.2/12)
+                    probability_sum += (hand_types[handtype] + max_high_card * 0.2/12) #when max, adds 0.3
 
                 else:
-                    probability_sum += (hand_types[handtype] + max_pair * 0.3 / 12)
+                    #print(hand_types[handtype] + max_pair * 0.2 / 12)
+                    probability_sum += (hand_types[handtype] + max_pair * 0.2 / 12)
 
             else:
                 probability_sum += hand_types[handtype]
@@ -125,7 +128,7 @@ class Player(Bot):
 
         #setup cur_hand and deck
         for card in my_hand:
-            cur_hand.append(Card(card))
+            cur_hand.append(eval7.Card(card))
 
         for card in cur_hand:
             deck.cards.remove(card)
@@ -152,17 +155,17 @@ class Player(Bot):
             opp_value = eval7.evaluate(opp_hand)
 
             if our_value > opp_value:
-                score += 2
+                p += 2
             
             elif our_value == opp_value:
-                score += 1
+                p += 1
 
             else:
-                score += 0
+                p += 0
 
-        hand_strength = score / (2 * iterations)
+        p = p / (2 * iterations)
 
-        return hand_strength
+        return p
 
 
     def handle_round_over(self, game_state, terminal_state, active):
@@ -219,9 +222,11 @@ class Player(Bot):
         #calculate p of cards
         monte_carlo_p = self.monte_carlo(my_cards, 100)
         guess_p = self.guess_next_probability(my_cards, board_cards, street)
-
+        print("monte", monte_carlo_p)
+        print("guess", guess_p)
         p = (monte_carlo_p + guess_p) / 2 #average
 
+        scary = 0
         #fix p based on opponent's bets
         if continue_cost > 0:
             scary = 0
@@ -235,7 +240,9 @@ class Player(Bot):
             if continue_cost > 50:
                 scary= 0.35
 
+        print("p", p)
         p = max([0, p - scary])
+        print("fixed p", p)
 
         #generate raise amount accordingly from p and street to 2:1 odds, or 33 percent
         raise_amount = 3 * opp_pip + (pot_total - my_pip - opp_pip) #3*opponents bet + pot before bets
@@ -261,6 +268,8 @@ class Player(Bot):
         #based on opponent's bet this round, p > this then positive expected value
 
         pot_odds = continue_cost / (pot_total + continue_cost) #p*pot_total + (1-p)*cost_to_continue (don't care about previous sunk costs)
+        print(pot_odds)
+        
         #if pay to keep playing: raise, call, or fold
         if continue_cost > 0: 
             
