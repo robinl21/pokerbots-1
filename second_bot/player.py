@@ -388,8 +388,8 @@ class Player(Bot):
                 print(random.random())
                 print("PREFLOP")
                 kill = True
-            #update value
-            raise_amount = int(my_pip + continue_cost) + 0.75 * (pot_total + continue_cost)
+            #update value- raise to 3*big blind
+            raise_amount = 6 
         
         else: #postflop, 75 percent of pot
             raise_amount = int(my_pip + continue_cost + 0.75*(pot_total + continue_cost))
