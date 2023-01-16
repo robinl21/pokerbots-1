@@ -305,20 +305,21 @@ class Player(Bot):
 
         scary = 0
         #TODO: try to consider opponent range and raises from previous rounds
-        #fix p based on opponent's bets
+        #fix p based on opponent's bets (keep low since don't want to kill too early)
         if continue_cost > 0:
             scary = 0
 
-            if continue_cost >= 6:
-                scary = 0.15
+            if continue_cost > 6:
+                scary = 0.1
 
-            if continue_cost >= 12:
-                scary = 0.25
+            if continue_cost > 12:
+                scary = 0.2
 
-            if continue_cost >= 50:
+            if continue_cost > 50:
                 scary= 0.35
 
         print("p", p)
+        prefix_p = p #before scary modification
         p = max([0, p - scary])
         print("fixed p", p)
 
@@ -331,14 +332,16 @@ class Player(Bot):
 
         #temporary raise_amount logic
                 # raise logic: kill early, raise higher (TAG)
+                #kill preflop if nothing raised this round
+        print(my_pip)
         if street < 3: #preflop 
-            # if p < 0.3: #kill early to play tight and agressive
-            #     print("PREFLOP")
-            #     kill = True
+            if p < 0.3 and random.random() > prefix_p: #kill early to play tight and agressive. 
+                print(random.random())
+                print("PREFLOP")
+                kill = True
             raise_amount = int(my_pip + continue_cost + 0.45*(pot_total + continue_cost))
         else: #postflop
-
-            raise_amount = int(my_pip + continue_cost + 0.85*(pot_total + continue_cost))
+            raise_amount = int(my_pip + continue_cost + 0.8*(pot_total + continue_cost))
         raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
     
         if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
@@ -378,8 +381,15 @@ class Player(Bot):
             else:
                 my_action = CheckAction()
 
-        if kill and FoldAction in legal_actions: #kill if can
-            return FoldAction()
+        if kill: #kill if can
+            print("KILLED")
+            if FoldAction in legal_actions:
+                return FoldAction()
+            elif CheckAction in legal_actions:
+                return CheckAction()
+            else:
+                CallAction()
+        
 
         return my_action
 
