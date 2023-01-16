@@ -46,85 +46,134 @@ class Player(Bot):
         pass
 
 
-    def guess_next_probability(self, my_hand, table_hand, hole):
-        #goal: add value to almost draw/flush hands
-        #generate power of a hand based on next card, see number of "outs" (to guarantee win)
+    # def guess_next_probability(self, my_hand, table_hand, street):
+    #     #goal: calculating outs
+    #     #generate power of a hand based on next card, see number of "outs" (to guarantee win)
     
-        #TODO: use HOLE and TABLE_HAND to differentiate hand type scores smartly
-            #value of a single pair decreases as holes increase (0.7 to lower)
-            #draw hands decrease in value as holes increase #reds decrease lesss
+    #     #TODO: use HOLE and TABLE_HAND to differentiate hand type scores smartly
+    #         #value of a single pair decreases as holes increase (0.7 to lower)
+    #         #draw hands decrease in value as holes increase #reds decrease lesss
 
-            # if table_hand has pair: pair is now considered 0 (everyone has)
-            # two pair: if biggest pair is the table one, pair is 0.7 normal. still hard to get
-            #if nontable pair is bigger, go from 0.7 to 1 based on how much bigger it is than table pair
+    #         # if table_hand has pair: pair is now considered 0 (everyone has)
+    #         # two pair: if biggest pair is the table one, pair is 0.7 normal. still hard to get
+    #         #if nontable pair is bigger, go from 0.7 to 1 based on how much bigger it is than table pair
 
 
-        #TODO: give value to hands close to string (drawing hand)/ close to flush (higher chance for reds)
-        #make them 0.5, but lower as holes increase
+    #     #TODO: give value to hands close to string (drawing hand)/ close to flush (higher chance for reds)
+    #     #make them 0.5, but lower as holes increase (when street is 4, draw hand is 0.2)
         
-        #hand types: hand value from 0 to 1, intervals of 0.2 for high card, pair, two pair
-        hand_types = {"High Card": 0, "Pair": 0.7, "Two Pair": 0.8, "Trips": 1, "Straight": 1, "Flush": 1,
-                        "Full House": 1, "Quads": 1, "Straight Flush": 1}
-        cur_hand_eval = [] #cur_hand held in eval7 Card class
+    #     #hand types: hand value from 0 to 1, intervals of 0.2 for high card, pair, two pair
 
-        probability_sum = 0
-        count = 0
+    #     #initial vals
+    #     draw_hand = 0.4 
+    #     pair_val = 0.7
+    #     two_pair = 0.8
 
-        #initialize deck,removing cards and adding to cur_hand
-        deck = eval7.Deck()
-        for card in my_hand:
-            deck.cards.remove(eval7.Card(card))
-            cur_hand_eval.append(eval7.Card(card))
-
-        for card in table_hand:
-            cur_hand_eval.append(eval7.Card(card))
-            deck.cards.remove(eval7.Card(card))
-
-        #for each card left in the deck: add to hand, evaluate, then remove from hand
-        for card in deck.cards:
-            count += 1
-            cur_hand_eval.append(card)
-            evaluated_hand = eval7.evaluate(cur_hand_eval)
-            handtype = eval7.handtype(evaluated_hand)
-
-            #evaluate highest card, adjust probability value
-            if handtype in {"High Card", "Pair", "Two Pair"}:
-                cur_hand_orig = set()
-                max_pair = -1
-                max_high_card = -1
-
-                for cur_card in cur_hand_eval:
-                    rank = cur_card.rank #numerical value 0 to 12, test (2, 3..A)
-                    #print(rank)
-                    #bigger card found: update max_high_card value
-                    if rank > max_high_card:
-                        max_high_card = rank
-
-
-                    #pair found, already in set: update max_pair value
-                    if rank in cur_hand_orig:
-                        #print("Pair found")
-                        if rank > max_pair: #if bigger pair
-                            max_pair = rank
-
-                    else: #otherwise add to set 
-                        cur_hand_orig.add(rank)
-
-                #based on handtype and rank of card, adjust
-                if handtype == "High Card":
-                    #print(hand_types[handtype] + max_high_card * 0.2/12)
-                    probability_sum += (hand_types[handtype] + max_high_card * 0.2/12) #when max, adds 0.3
-
-                else:
-                    #print(hand_types[handtype] + max_pair * 0.2 / 12)
-                    probability_sum += (hand_types[handtype] + max_pair * 0.2 / 12)
-
-            else:
-                probability_sum += hand_types[handtype]
-
-            cur_hand_eval.remove(card) #remove from hand
+    #     if street >= 3: #on flop, looking at value with 4 cards on table
+    #         pair_val = 0.65
+    #     if street >= 4: #looking at value with five cards on table
+    #         pair_val = 0.6
+    #         draw_hand = 0.2
+    #     if street >= 5:
+    #         pair_val = 0.5
+    #         draw_hand = 0.2
         
-        return probability_sum / count #probability from guessing
+
+    #     hand_types = {"High Card": 0, "Pair": pair_val, "Two Pair": two_pair, "Draw Hand": draw_hand, "Trips": 1, "Straight": 1, "Flush": 1,
+    #                     "Full House": 1, "Quads": 1, "Straight Flush": 1}
+    #     cur_hand_eval = [] #cur_hand held in eval7 Card class
+    #     comm_cards = []
+
+    #     probability_sum = 0
+    #     count = 0
+
+    #     #initialize deck,removing cards and adding to cur_hand
+    #     deck = eval7.Deck()
+    #     for card in my_hand:
+    #         deck.cards.remove(eval7.Card(card))
+    #         cur_hand_eval.append(eval7.Card(card))
+
+    #     for card in table_hand:
+    #         cur_hand_eval.append(eval7.Card(card))
+    #         comm_cards.append(eval7.Card(card))
+    #         deck.cards.remove(eval7.Card(card))
+
+    #     #for each card left in the deck: add to hand, evaluate, then remove from hand
+    #     for card in deck.cards:
+    #         count += 1
+    #         cur_hand_eval.append(card)
+    #         comm_cards.append(card)
+    #         evaluated_hand = eval7.evaluate(cur_hand_eval)
+    #         handtype = eval7.handtype(evaluated_hand)
+
+    #         evaluated_comm = eval7.evaluate(comm_cards)
+    #         comm_handtype = eval7.handtype(evaluated_comm)
+
+    #         if comm_handtype in {"Pair"}:
+    #             pair_val = 0
+    #             two_pair = 0.7
+
+    #         #determine if drawhand or flush hand here
+    #         # if drawhands have better value than high card or pair, replace with that value
+
+    #         #evaluate highest card, adjust probability value
+    #         if handtype in {"High Card", "Pair", "Two Pair"}:
+    #             cur_hand_orig = set()
+    #             max_pair = -1
+    #             max_high_card = -1
+
+    #             for cur_card in cur_hand_eval:
+    #                 rank = cur_card.rank #numerical value 0 to 12, test (2, 3..A)
+    #                 #print(rank)
+    #                 #bigger card found: update max_high_card value
+    #                 if rank > max_high_card:
+    #                     max_high_card = rank
+
+
+    #                 #pair found, already in set: update max_pair value
+    #                 if rank in cur_hand_orig:
+    #                     #print("Pair found")
+    #                     if rank > max_pair: #if bigger pair
+    #                         max_pair = rank
+
+    #                 else: #otherwise add to set 
+    #                     cur_hand_orig.add(rank)
+
+    #             #based on handtype and rank of card, adjust
+    #             if handtype == "High Card":
+    #                 #print(hand_types[handtype] + max_high_card * 0.2/12)
+    #                 probability_sum += (hand_types[handtype] + max_high_card * 0.2/12) #when max, adds 0.3
+
+    #             else:
+    #                 #print(hand_types[handtype] + max_pair * 0.2 / 12)
+    #                 probability_sum += (hand_types[handtype] + max_pair * 0.2 / 12)
+
+    #         else:
+    #             probability_sum += hand_types[handtype]
+
+    #         cur_hand_eval.remove(card) #remove from hand
+    #         comm_cards.remove(card)
+
+            
+    #         #reset values
+    #         draw_hand = 0.4 
+    #         pair_val = 0.7
+    #         two_pair = 0.8
+
+    #         if street >= 3: #on flop, looking at value with 4 cards on table
+    #             pair_val = 0.65
+    #         if street >= 4: #looking at value with five cards on table
+    #             pair_val = 0.6
+    #             draw_hand = 0.2
+    #         if street >= 5:
+    #             pair_val = 0.5
+    #             draw_hand = 0.2
+
+    #     return probability_sum / count #probability from guessing
+
+    def starting_hand(self, my_hand):
+        #return True or False on whether to keep playing this hand
+        pass
 
     def monte_carlo(self, my_hand, iterations, community = []):
         #using code from lecture-ref2 and 3, slightly modified for river of blood
@@ -177,6 +226,7 @@ class Player(Bot):
                         
                         while is_red[0]: #next guessed to be red
                             #draw additional red card
+                            print("ADD RED")
                             _COMM += 1
                             num_cards_used += 1
                             num_red_seen += 1
@@ -200,6 +250,7 @@ class Player(Bot):
                 is_red = random.choices(population = [True, False], weights = [red_prob, 1 - red_prob], k = 1)
 
                 while is_red[0]:
+                    print("ADD RED")
                     _COMM += 1
                     num_cards_used += 1
                     num_red_seen += 1
@@ -292,16 +343,12 @@ class Player(Bot):
 
         #calculate p of cards
         monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
-        guess_p = self.guess_next_probability(my_cards, board_cards, street)
+        #guess_p = self.guess_next_probability(my_cards, board_cards, street)
         print(my_cards)
         print(board_cards)
         print("monte", monte_carlo_p)
-        print("guess", guess_p)
 
-        if street < 3: #TODO: pre-flop, make this p easier to flop for aggressive playing?
-            p = monte_carlo_p
-        else:
-            p = 1 * monte_carlo_p + 0 * guess_p #lower ratio until guess_p implements flush/draw hands
+        p = monte_carlo_p
 
         scary = 0
         #TODO: try to consider opponent range and raises from previous rounds
@@ -334,14 +381,17 @@ class Player(Bot):
                 # raise logic: kill early, raise higher (TAG)
                 #kill preflop if nothing raised this round
         print(my_pip)
-        print("ENTER STREET")
-        if street < 3: #preflop 
+
+        if street < 3: #preflop: implement folding early via bill chen formula
             if p < 0.25 and random.random() > prefix_p: #kill early to play tight and agressive. 
+                #TODO: calculate starting hand
                 print(random.random())
                 print("PREFLOP")
                 kill = True
-            raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
-        else: #postflop
+            #update value
+            raise_amount = int(my_pip + continue_cost) + 0.75 * (pot_total + continue_cost)
+        
+        else: #postflop, 75 percent of pot
             raise_amount = int(my_pip + continue_cost + 0.75*(pot_total + continue_cost))
         raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
     
