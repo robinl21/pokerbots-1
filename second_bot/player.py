@@ -334,14 +334,15 @@ class Player(Bot):
                 # raise logic: kill early, raise higher (TAG)
                 #kill preflop if nothing raised this round
         print(my_pip)
+        print("ENTER STREET")
         if street < 3: #preflop 
-            if p < 0.3 and random.random() > prefix_p: #kill early to play tight and agressive. 
+            if p < 0.25 and random.random() > prefix_p: #kill early to play tight and agressive. 
                 print(random.random())
                 print("PREFLOP")
                 kill = True
-            raise_amount = int(my_pip + continue_cost + 0.45*(pot_total + continue_cost))
+            raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
         else: #postflop
-            raise_amount = int(my_pip + continue_cost + 0.8*(pot_total + continue_cost))
+            raise_amount = int(my_pip + continue_cost + 0.75*(pot_total + continue_cost))
         raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
     
         if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
