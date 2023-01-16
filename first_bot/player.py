@@ -52,7 +52,15 @@ class Player(Bot):
         #hole: # rounds so far
     
         #TODO: use HOLE and TABLE_HAND to differentiate hand type scores smartly
-        #TODO: give value to hands close to string (drawing hand)
+            #value of a single pair decreases as holes increase (0.7 to lower)
+            #draw hands decrease in value as holes increase #reds decrease lesss
+
+            # if table_hand has pair: pair is now considered 0 (everyone has)
+            # two pair: if biggest pair is the table one, pair is 0.7 normal. still hard to get
+            #if nontable pair is bigger, go from 0.7 to 1 based on how much bigger it is than table pair
+
+
+        #TODO: give value to hands close to string (drawing hand)/ close to flush (higher chance for reds)
         
         #hand types: hand value from 0 to 1, intervals of 0.2 for high card, pair, two pair
         hand_types = {"High Card": 0, "Pair": 0.7, "Two Pair": 0.8, "Trips": 1, "Straight": 1, "Flush": 1,
@@ -118,20 +126,34 @@ class Player(Bot):
         
         return probability_sum / count #probability from guessing
 
-    def monte_carlo(self, my_hand, iterations):
-        #using code from lecture-ref2, slightly modified for river of blood
+    def monte_carlo(self, my_hand, iterations, community = []):
+        #using code from lecture-ref2 and 3, slightly modified for river of blood
         #probability of winning this round with current hand
         #TODO: consider river of blood. randomly decide 50 percent whether to draw another or not
 
         deck = eval7.Deck()
         cur_hand = []
+        community_cards = []
+        num_red_seen = 0
 
         #setup cur_hand and deck
         for card in my_hand:
+            if card[1] == 'h' or card[1] == 'd':
+                num_red_seen += 1
             cur_hand.append(eval7.Card(card))
 
         for card in cur_hand:
             deck.cards.remove(card)
+
+        #remove community cards from deck
+        if community != []:
+            for card in community:
+                if card[1] == 'h' or card[1] == 'd':
+                    num_red_seen += 1
+                community_cards.append(eval7.Card(card))
+
+            for card in community_cards:
+                deck.cards.remove(card)
 
         p = 0
 
@@ -140,16 +162,64 @@ class Player(Bot):
 
             #TODO: generate number of community cards (for now keep 5)
 
-            _COMM = 5 #num of community cards
+            #simulate red river
+            #ratio: 52 total cards. reds: 26
+            # (26 - num_red_seen) / (52 - cards_used)
+            if len(community) >= 5:
+                    if community[-1][1] == 'h' or community[-1][1] == 'd':
+                        _COMM = 1 #guaranteed one more community card
+                        num_cards_used = 2 + 2 + len(community) + 1 
+                
+                        red_prob = ((26 - num_red_seen) / (52 - num_cards_used)) * 100
+                        
+                        #guess whether next one is red or not
+                        is_red = random.choices(population = [True, False], weights = [red_prob, 100 - red_prob], k = 1)
+                        
+                        while is_red[0]: #next guessed to be red
+                            #draw additional red card
+                            _COMM += 1
+                            num_cards_used += 1
+                            num_red_seen += 1
+                            
+                            red_prob = ((26 - num_red_seen) / (52 - num_cards_used)) * 100
+                            
+                            if red_prob <= 0 or red_prob >= 1:
+                                red_prob = 0
+                            #reselect
+                            is_red = random.choices(population = [True, False], weights = [red_prob, 100 - red_prob], k = 1)
+
+                    else: #last showdown, done flipping
+                        _COMM = 0
+            
+            else:
+                _COMM = 5 - len(community) #num of community cards needed to draw
+                num_cards_used = 9 
+                num_red_seen += int(_COMM / 2)#assume half of those we draw are red
+
+                red_prob = (26 - num_red_seen) / (52 - num_cards_used)
+                is_red = random.choices(population = [True, False], weights = [red_prob, 1 - red_prob], k = 1)
+
+                while is_red[0]:
+                    _COMM += 1
+                    num_cards_used += 1
+                    num_red_seen += 1
+                    red_prob = (26 - num_red_seen) / (52 - num_cards_used)
+                            
+                    if red_prob <= 0 or red_prob >= 1:
+                        red_prob = 0
+                    
+                    is_red = random.choices(population = [True, False], weights = [red_prob, 1 - red_prob], k = 1)      
+                    
             _OPP = 2
 
             draw = deck.peek(_COMM + _OPP)
 
             opp_hole = draw[:_OPP] 
-            community = draw[_OPP:]
+            alt_community = draw[_OPP:]
 
-            our_hand = cur_hand +  community
-            opp_hand = opp_hole +  community
+            #generate hands
+            our_hand = cur_hand + community_cards + alt_community
+            opp_hand = opp_hole + community_cards + alt_community
 
             our_value = eval7.evaluate(our_hand)
             opp_value = eval7.evaluate(opp_hand)
@@ -220,13 +290,18 @@ class Player(Bot):
         pot_total = my_contribution + opp_contribution
 
         #calculate p of cards
-        monte_carlo_p = self.monte_carlo(my_cards, 100)
+        monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
         guess_p = self.guess_next_probability(my_cards, board_cards, street)
         print("monte", monte_carlo_p)
         print("guess", guess_p)
-        p = (monte_carlo_p + guess_p) / 2 #average
+
+        if street < 3: #TODO: pre-flop, make this p easier to flop?
+            p = monte_carlo_p
+        else:
+            p = (monte_carlo_p + guess_p) / 2 #average
 
         scary = 0
+        #TODO: try to consider range and raises from previous rounds
         #fix p based on opponent's bets
         if continue_cost > 0:
             scary = 0
@@ -244,6 +319,7 @@ class Player(Bot):
         p = max([0, p - scary])
         print("fixed p", p)
 
+        #TODO: figure out better amount to bet: maybe base it off of how big our p is
         #generate raise amount accordingly from p and street to 2:1 odds, or 33 percent
         raise_amount = 3 * opp_pip + (pot_total - my_pip - opp_pip) #3*opponents bet + pot before bets
         raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
@@ -270,6 +346,7 @@ class Player(Bot):
         pot_odds = continue_cost / (pot_total + continue_cost) #p*pot_total + (1-p)*cost_to_continue (don't care about previous sunk costs)
         print(pot_odds)
         
+        #TODO: make folding easier (70 percent) unless strong in pre-flop
         #if pay to keep playing: raise, call, or fold
         if continue_cost > 0: 
             
