@@ -43,7 +43,7 @@ class Player(Bot):
         #round_num = game_state.round_num  # the round number from 1 to NUM_ROUNDS
         #my_cards = round_state.hands[active]  # your cards
         #big_blind = bool(active)  # True if you are the big blind
-        pass
+        self.first_raise = True
 
 
     # def guess_next_probability(self, my_hand, table_hand, street):
@@ -308,6 +308,63 @@ class Player(Bot):
         #opp_cards = previous_state.hands[1-active]  # opponent's cards or [] if not revealed
         pass
 
+    def hand_convert(self, card1, card2):
+        '''
+        Converts two cards 'rank+suite' into (biggest, smaller card + (s, o,))
+        '''
+        value = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
+        rank1, rank2 = card1[0], card2[0]
+        rank1, rank2 = value[rank1], value[rank2]
+
+        suite1, suite2 = card1[1], card2[1]
+
+        #number, suite, card
+        card1 = (rank1, suite1, card1)
+        card2 = (rank2, suite2, card2)
+
+        if card1[0] == card2[0]: #same rank
+            to_return = (card1[2][0], card2[2][0]) #pair
+        elif card1[0] > card2[0]: #card1 bigger
+            if card1[1] == card2[1]: #same suite
+                to_return = (card1[2][0], card2[2][0] + 's')
+            else:
+                to_return = (card1[2][0], card2[2][0] + 'o')
+        elif card1[0] < card2[0]:
+            if card1[1] == card2[1]: #same suite
+                to_return = (card2[2][0], card1[2][0] + 's')
+            else:
+                to_return = (card2[2][0], card1[2][0] + 'o')
+        print(to_return)
+        return to_return
+
+
+    def legalize_raise(self, raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions):
+        '''
+        Legalizes raise action. raise -> call > check -> flop
+        '''
+        # temp_action: best we can do if we want to raise
+
+        #get legal raise amount
+        raise_amount = max([min_raise, raise_amount])
+        if raise_amount > max_raise:
+            raise_amount = max_raise
+    
+        raise_cost = raise_amount - my_pip
+
+        if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
+            temp_action = RaiseAction(raise_amount)
+
+        elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
+            temp_action = CallAction()
+
+        elif CheckAction in legal_actions: 
+            temp_action = CheckAction()
+        else:
+            temp_action = FoldAction()
+
+        return temp_action
+
+
     def get_action(self, game_state, round_state, active):
         '''
         Where the magic happens - your code should implement this function.
@@ -334,10 +391,104 @@ class Player(Bot):
         my_contribution = STARTING_STACK - my_stack  # the number of chips you have contributed to the pot
         opp_contribution = STARTING_STACK - opp_stack  # the number of chips your opponent has contributed to the pot
         
+        #0 index - 2 index: 70 percent, 82.5 percent hand, 91 percent hand
+        #3 index - 4 index: value hands (tight), polarized (loose)
+        ranges = {
+            'A': {'A': ['Raise', 'Raise', 'Raise', 'Raise'], 
+                    'Ko': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'], '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 
+                    'Ks': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'K': {'K': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'Q': {'Q': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'J': {'J': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'T': {'T': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Raise', 'Fold'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '9': {'9': ['Raise', 'Raise', 'Raise', 'Raise'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call']
+
+            },
+
+            '8': {'8': ['Raise', 'Raise', 'Raise', 'Raise'],
+                 '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '7': {'7': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '6': {'6': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '5': {'5': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                 '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+            },
+
+            '4': {'4': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+            },
+
+            '3': {'3': ['Raise', 'Raise', 'Raise', 'Call'], 
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
+                    '2s': ['Call', 'Call', 'Raise', 'Call']},
+
+            '2': {'2': ['Raise', 'Raise', 'Raise', 'Call']
+            }
+        
+        }
         
         min_raise, max_raise = round_state.raise_bounds() 
         my_action = None
-        kill = False # True if starting hand really bad, fold at pre-flop if can
+        
 
         pot_total = my_contribution + opp_contribution
 
@@ -373,76 +524,167 @@ class Player(Bot):
         pot_odds = continue_cost / (pot_total + continue_cost) #p*pot_total + (1-p)*cost_to_continue (don't care about previous sunk costs)
         print("pot odds", pot_odds)
 
-        #TODO: figure out better amount to bet: maybe base it off of how big our p is
-        #generate raise amount accordingly from p and street to 2:1 odds, or 33 percent
-        #raise_amount = 3 * opp_pip + (pot_total - my_pip - opp_pip) #3*opponents bet + pot before bets
-
         #temporary raise_amount logic
                 # raise logic: kill early, raise higher (TAG)
                 #kill preflop if nothing raised this round
         print(my_pip)
 
+        #TODO: collect opponent information and adjust
         if street < 3: #preflop: implement folding early via bill chen formula
-            if p < 0.25 and random.random() > prefix_p: #kill early to play tight and agressive. 
-                #TODO: calculate starting hand
-                print(random.random())
-                print("PREFLOP")
-                kill = True
-            #update value- raise to 3*big blind
-            raise_amount = 6 
-        
-        else: #postflop, 75 percent of pot
-            raise_amount = int(my_pip + continue_cost + 0.75*(pot_total + continue_cost))
-        raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
-    
-        if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
-            raise_amount = max_raise #all-in
-        
-        raise_cost = raise_amount - my_pip #cost to raise
+            card1 = my_cards[0]
+            card2 = my_cards[1]
+            if continue_cost > 0: #raise
+                #opening raise from small blind: continue_cost = 1, my_pip = 1
+                #adjust later: currently 2.5 x BB
+                if continue_cost == 1 and my_pip == 1: 
+                    print("SMALL BLIND INITIAL")
+                    hand = self.hand_convert(card1, card2)
+                    decision = ranges[hand[0]][hand[1]][1]
+                
+                    if decision == "Raise":
+                        raise_amount = 5
+                        return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                    
+                    elif decision == "Call": #only call available
+                        return CallAction()
 
-        # temp_action: best we can do if we want to raise/continue
-        if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
-            temp_action = RaiseAction(raise_amount)
+                    elif decision == "Fold":
+                        return FoldAction()
 
-        elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
-            temp_action = CallAction()
+                #three-bet: our first raise encountered this game (non-including small blind)
+                #adjust to opponents!! 
+                elif self.first_raise:
+                    print("3 BET")
+                    self.first_raise = False
+                    #three-betting
+                    hand = self.hand_convert(card1, card2)
+                    decision = ranges[hand[0]][hand[1]][3]
 
-        elif CheckAction in legal_actions: 
-            temp_action = CheckAction()
-        else:
-            temp_action = FoldAction()
+                    if decision == "Raise":
+                        #raise 3x amount of continue cost
+                        raise_amount = continue_cost * 3
+                        return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                    
+                    elif decision == "Call": #only call available
+                        return CallAction()
 
-        
-        #if pay to keep playing: raise, call, or fold
-        if continue_cost > 0: 
-            
-            if p > pot_odds: #call or raise, don't fold
-                if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
-                    my_action = temp_action #best we can do if want to raise
+                    elif decision == "Fold": #don't always fold
+                        if p > pot_odds and p > 0.5:
+                            return CallAction()
+                        else:
+                            return FoldAction()
+                    
 
                 else:
-                    my_action = CallAction()
-            else: 
-            #   Fold
-                my_action = FoldAction()
-        
-        else: #pay 0 to play, want to either raise or check
-            if random.random() < p:
-                my_action = temp_action
-            else:
-                my_action = CheckAction()
+                    #raise beyond first raise
+                    print("CONTINUED RAISE")
+                    raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
+                
+                    raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
+            
+                    if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
+                        raise_amount = max_raise #all-in
+                    
+                    raise_cost = raise_amount - my_pip #cost to raise
 
-        if kill: #kill if can
-            print("KILLED")
-            if FoldAction in legal_actions:
-                return FoldAction()
-            elif CheckAction in legal_actions:
-                return CheckAction()
-            else:
-                CallAction()
-        
+                    #legalize action here: Func
 
-        return my_action
+                    # temp_action: best we can do if we want to raise/continue
+                    if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
+                        temp_action = RaiseAction(raise_amount)
+
+                    elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
+                        temp_action = CallAction()
+
+                    elif CheckAction in legal_actions: 
+                        temp_action = CheckAction()
+                    else:
+                        temp_action = FoldAction()
+
+                    
+                    #if pay to keep playing: raise, call, or fold
+                    if continue_cost > 0: 
+                        
+                        if p > pot_odds: #call or raise, don't fold
+                            if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
+                                my_action = temp_action #best we can do if want to raise
+
+                            else:
+                                my_action = CallAction()
+                        else: 
+                        #   Fold
+                            my_action = FoldAction()
+                    
+                    else: #pay 0 to play, want to either raise or check
+                        if random.random() < p:
+                            my_action = temp_action
+                        else:
+                            my_action = CheckAction()
+                    
+
+                    return my_action
+
+            else: #continue_cost == 0:
+                print("BIG BLIND OPENING RAISE")
+                #big blind first opening raise: same logic as small blind opening raise, except only raise/check
+                hand = self.hand_convert(card1, card2)
+                decision = ranges[hand[0]][hand[1]][1]
+            
+                if decision == "Raise":
+                    raise_amount = 5
+                    temp_action = self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                    print(temp_action)
+                    return temp_action
+                else:
+                    return CheckAction()
+
+        
+        else: #postflop, 66 percent of pot. normal play
+            raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
+        
+            raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
+    
+            if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
+                raise_amount = max_raise #all-in
+            
+            raise_cost = raise_amount - my_pip #cost to raise
+
+            #legalize action here: Func
+
+            # temp_action: best we can do if we want to raise/continue
+            if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
+                temp_action = RaiseAction(raise_amount)
+
+            elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
+                temp_action = CallAction()
+
+            elif CheckAction in legal_actions: 
+                temp_action = CheckAction()
+            else:
+                temp_action = FoldAction()
+
+            
+            #if pay to keep playing: raise, call, or fold
+            if continue_cost > 0: 
+                
+                if p > pot_odds: #call or raise, don't fold
+                    if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
+                        my_action = temp_action #best we can do if want to raise
+
+                    else:
+                        my_action = CallAction()
+                else: 
+                #   Fold
+                    my_action = FoldAction()
+            
+            else: #pay 0 to play, want to either raise or check
+                if random.random() < p:
+                    my_action = temp_action
+                else:
+                    my_action = CheckAction()
+            
+
+            return my_action
 
 
 if __name__ == '__main__':
