@@ -30,6 +30,10 @@ class Player(Bot):
         self.opp_call_3bets = 0
         self.opp_fold_3bets = 0
         self.fold_to_3bet = 0 #percentage
+        self.above_ten = False
+
+        self.my_preflop_raises = 0
+        self.fold_to_preflop = 0
 
     def handle_new_round(self, game_state, round_state, active):
         '''
@@ -59,33 +63,34 @@ class Player(Bot):
 
             #set to standard, while still collecting data on opponent
             self.three_bet_sizing = 3
-            self.three_bet_decision = 5
+            self.three_bet_decision = 3
             
             return None
 
-        print("ABOVE 10 3 bets")
-
-
-        print(self.my_3bets, self.opp_raise_3bets, self.opp_call_3bets, self.opp_fold_3bets, "ALL")
-
-        self.fold_to_3bet = self.opp_fold_3bets / self.my_3bets
-        print("fold percentages", self.fold_to_3bet)
-
-        #defaults: 3betsizing and 3betdecisioning
-        self.three_bet_sizing = 3 #3 * the continue cost
-        self.three_bet_decision = 3 #value hands
-
-        if self.fold_to_3bet < 0: #folds rarely to 3-bets: play tight, high value cards when 3-betting
-            self.three_bet_sizing = 3
-            self.three_bet_decision = 5 #only 3 bet for high value cards
-
-        elif self.fold_to_3bet > 0.65: #folds alot, play loose - lower bet since a lot of bets?
-            self.three_bet_sizing = 2.5
-            self.three_bet_decision = 4 #3-bet a wide range polarized loose
         else:
-            #default:
-            self.three_bet_sizing = 3
-            self.three_bet_decision = 3 #merged default
+            print("ABOVE 10 3 bets")
+            self.above_ten = True
+
+            print(self.my_3bets, self.opp_raise_3bets, self.opp_call_3bets, self.opp_fold_3bets, "ALL")
+
+            self.fold_to_3bet = self.opp_fold_3bets / self.my_3bets
+            print("fold percentages", self.fold_to_3bet)
+
+            #defaults: 3betsizing and 3betdecisioning
+            self.three_bet_sizing = 3 #3 * the continue cost
+            self.three_bet_decision = 3 #value hands
+
+            if self.fold_to_3bet <= 0.2: #folds rarely to 3-bets: play tight, high value cards when 3-betting
+                self.three_bet_sizing = 3.5  
+                self.three_bet_decision = 5 #only 3 bet for high value cards
+
+            elif self.fold_to_3bet >= 0.65: #folds alot, play loose - lower bet since a lot of bets?
+                self.three_bet_sizing = 2.75 #variable: if weak, 2.75
+                self.three_bet_decision = 4 #3-bet a wide range polarized loose
+            else:
+                #default:
+                self.three_bet_sizing = 3
+                self.three_bet_decision = 3 #merged default
 
 
 
@@ -529,10 +534,24 @@ class Player(Bot):
                     #         if random.random() > 0.3 and p > 0.5:
                     #             self.three_bet_sizing = 4
 
-                    #if low fold rate: 
+                    #if playing tight due to low frequency of fold, oftentimes get stuck since we fold and don't give 3-bets
+                    #allow more 3-betting when playing tight so we don't get stuck
+                    if self.three_bet_decision == 5 and self.above_ten:
+                        if ranges[hand[0]][hand[1]][3] == "Raise" and random.random() > 0.5 and p > 0.5:
+                            decision = "Raise"
+                            self.three_bet_sizing = 3
+
+                    #if playing loose: want to keep the pressure on in the pot odds:
+                    if self.three_bet_decision == 4 and self.above_ten:
+                        if decision == "Raise":
+                            if p > 0.5 and random.random() < self.fold_to_3bet: #the higher the fold percentage is, more likely to put in higher (put same pressure)
+                                self.three_bet_sizing = 3
+                            else:
+                                self.three_bet_sizing = 2.5 #lower if weak
+
                     if decision == "Raise":
                         #raise 3x amount of opponent's bet: 3 * opp_pip (how much opponent contributed this round of betting )
-                        print("WE HAVE 3-BET")
+                        print("WE HAVE 3-BET", self.three_bet_decision)
                         self.three_bet = True #indicator for next action that our previous action was a 3-bet
                         self.my_3bets += 1 #increase num times we 3bet
                         raise_amount = self.three_bet_sizing * opp_pip
