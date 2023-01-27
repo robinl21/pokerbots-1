@@ -18,28 +18,19 @@ class Player(Bot):
     def __init__(self):
         '''
         Called when a new game starts. Called exactly once.
-
         Arguments:
         Nothing.
-
         Returns:
         Nothing.
         '''
-        self.my_3bets = 0
-        self.opp_raise_3bets = 0
-        self.opp_call_3bets = 0
-        self.opp_fold_3bets = 0
-        self.fold_to_3bet = 0 #percentage
 
     def handle_new_round(self, game_state, round_state, active):
         '''
         Called when a new round starts. Called NUM_ROUNDS times.
-
         Arguments:
         game_state: the GameState object.
         round_state: the RoundState object.
         active: your player's index.
-
         Returns:
         Nothing.
         '''
@@ -48,79 +39,137 @@ class Player(Bot):
         #round_num = game_state.round_num  # the round number from 1 to NUM_ROUNDS
         #my_cards = round_state.hands[active]  # your cards
         #big_blind = bool(active)  # True if you are the big blind
-        self.first_raise = True #beginning of each WHOLE GAME
-        self.three_bet = False #indicator that we three-bet in our previous action
+        self.first_raise = True
 
-        print("NEW ROUND")
-        #INITIALLY PLAY 100 until adjusting values to collect data:
 
-        if self.my_3bets < 10:
-            print(self.my_3bets, self.opp_raise_3bets, self.opp_call_3bets, self.opp_fold_3bets, "ALL")
+    # def guess_next_probability(self, my_hand, table_hand, street):
+    #     #goal: calculating outs
+    #     #generate power of a hand based on next card, see number of "outs" (to guarantee win)
+    
+    #     #TODO: use HOLE and TABLE_HAND to differentiate hand type scores smartly
+    #         #value of a single pair decreases as holes increase (0.7 to lower)
+    #         #draw hands decrease in value as holes increase #reds decrease lesss
 
-            #set to standard, while still collecting data on opponent
-            self.three_bet_sizing = 3
-            self.three_bet_decision = 5
+    #         # if table_hand has pair: pair is now considered 0 (everyone has)
+    #         # two pair: if biggest pair is the table one, pair is 0.7 normal. still hard to get
+    #         #if nontable pair is bigger, go from 0.7 to 1 based on how much bigger it is than table pair
+
+
+    #     #TODO: give value to hands close to string (drawing hand)/ close to flush (higher chance for reds)
+    #     #make them 0.5, but lower as holes increase (when street is 4, draw hand is 0.2)
+        
+    #     #hand types: hand value from 0 to 1, intervals of 0.2 for high card, pair, two pair
+
+    #     #initial vals
+    #     draw_hand = 0.4 
+    #     pair_val = 0.7
+    #     two_pair = 0.8
+
+    #     if street >= 3: #on flop, looking at value with 4 cards on table
+    #         pair_val = 0.65
+    #     if street >= 4: #looking at value with five cards on table
+    #         pair_val = 0.6
+    #         draw_hand = 0.2
+    #     if street >= 5:
+    #         pair_val = 0.5
+    #         draw_hand = 0.2
+        
+
+    #     hand_types = {"High Card": 0, "Pair": pair_val, "Two Pair": two_pair, "Draw Hand": draw_hand, "Trips": 1, "Straight": 1, "Flush": 1,
+    #                     "Full House": 1, "Quads": 1, "Straight Flush": 1}
+    #     cur_hand_eval = [] #cur_hand held in eval7 Card class
+    #     comm_cards = []
+
+    #     probability_sum = 0
+    #     count = 0
+
+    #     #initialize deck,removing cards and adding to cur_hand
+    #     deck = eval7.Deck()
+    #     for card in my_hand:
+    #         deck.cards.remove(eval7.Card(card))
+    #         cur_hand_eval.append(eval7.Card(card))
+
+    #     for card in table_hand:
+    #         cur_hand_eval.append(eval7.Card(card))
+    #         comm_cards.append(eval7.Card(card))
+    #         deck.cards.remove(eval7.Card(card))
+
+    #     #for each card left in the deck: add to hand, evaluate, then remove from hand
+    #     for card in deck.cards:
+    #         count += 1
+    #         cur_hand_eval.append(card)
+    #         comm_cards.append(card)
+    #         evaluated_hand = eval7.evaluate(cur_hand_eval)
+    #         handtype = eval7.handtype(evaluated_hand)
+
+    #         evaluated_comm = eval7.evaluate(comm_cards)
+    #         comm_handtype = eval7.handtype(evaluated_comm)
+
+    #         if comm_handtype in {"Pair"}:
+    #             pair_val = 0
+    #             two_pair = 0.7
+
+    #         #determine if drawhand or flush hand here
+    #         # if drawhands have better value than high card or pair, replace with that value
+
+    #         #evaluate highest card, adjust probability value
+    #         if handtype in {"High Card", "Pair", "Two Pair"}:
+    #             cur_hand_orig = set()
+    #             max_pair = -1
+    #             max_high_card = -1
+
+    #             for cur_card in cur_hand_eval:
+    #                 rank = cur_card.rank #numerical value 0 to 12, test (2, 3..A)
+    #                 #print(rank)
+    #                 #bigger card found: update max_high_card value
+    #                 if rank > max_high_card:
+    #                     max_high_card = rank
+
+
+    #                 #pair found, already in set: update max_pair value
+    #                 if rank in cur_hand_orig:
+    #                     #print("Pair found")
+    #                     if rank > max_pair: #if bigger pair
+    #                         max_pair = rank
+
+    #                 else: #otherwise add to set 
+    #                     cur_hand_orig.add(rank)
+
+    #             #based on handtype and rank of card, adjust
+    #             if handtype == "High Card":
+    #                 #print(hand_types[handtype] + max_high_card * 0.2/12)
+    #                 probability_sum += (hand_types[handtype] + max_high_card * 0.2/12) #when max, adds 0.3
+
+    #             else:
+    #                 #print(hand_types[handtype] + max_pair * 0.2 / 12)
+    #                 probability_sum += (hand_types[handtype] + max_pair * 0.2 / 12)
+
+    #         else:
+    #             probability_sum += hand_types[handtype]
+
+    #         cur_hand_eval.remove(card) #remove from hand
+    #         comm_cards.remove(card)
+
             
-            return None
+    #         #reset values
+    #         draw_hand = 0.4 
+    #         pair_val = 0.7
+    #         two_pair = 0.8
 
-        print("ABOVE 10 3 bets")
+    #         if street >= 3: #on flop, looking at value with 4 cards on table
+    #             pair_val = 0.65
+    #         if street >= 4: #looking at value with five cards on table
+    #             pair_val = 0.6
+    #             draw_hand = 0.2
+    #         if street >= 5:
+    #             pair_val = 0.5
+    #             draw_hand = 0.2
 
+    #     return probability_sum / count #probability from guessing
 
-        print(self.my_3bets, self.opp_raise_3bets, self.opp_call_3bets, self.opp_fold_3bets, "ALL")
-
-        self.fold_to_3bet = self.opp_fold_3bets / self.my_3bets
-        print("fold percentages", self.fold_to_3bet)
-
-        #defaults: 3betsizing and 3betdecisioning
-        self.three_bet_sizing = 3 #3 * the continue cost
-        self.three_bet_decision = 3 #value hands
-
-        if self.fold_to_3bet < 0: #folds rarely to 3-bets: play tight, high value cards when 3-betting
-            self.three_bet_sizing = 3
-            self.three_bet_decision = 5 #only 3 bet for high value cards
-
-        elif self.fold_to_3bet > 0.65: #folds alot, play loose - lower bet since a lot of bets?
-            self.three_bet_sizing = 2.5
-            self.three_bet_decision = 4 #3-bet a wide range polarized loose
-        else:
-            #default:
-            self.three_bet_sizing = 3
-            self.three_bet_decision = 3 #merged default
-
-
-
-        #get information, calculate numbers:total number of raises the opponent does, etc
-        #update settings:
-
-        #information: on how to 3-bet:
-            # opponent response to 3-bet
-
-                #calling 3-bets, raising 3-bets rather than folding: value hands
-                    #pump up the bets sizing!
-                #folding to 3-bets: keep bluffs (polarized), size smaller bets
-            
-            #opponents opening:
-                #opening button at very high frequency, 3-bet wide range of hands, size smaller bets
-                #opens a small percentage of hands, strong value hands, increase bet size
-
-            
-        #dealing with opponent's 3/4/5 bet:
-            #if opponent raises very rarely, when facing it, can just fold - play high value hands only, (call/raise less often)
-
-            #if plays loose and aggressive (raises often) - continue with wider polarized range (less scary points), (call/raise more often)
-
-        #opening range:
-            #big blind frequently folds to pre-flop raises:
-                #open small bet size, large range
-
-            #big blind rarely folds to pre-flop raises: open large size, tighter range
-
-
-            #aggressive 3-betting strategy: tighten range, larger bets
-            #weak 3-betting: large range, smaller bets
-
-            
-
+    def starting_hand(self, my_hand):
+        #return True or False on whether to keep playing this hand
+        pass
 
     def monte_carlo(self, my_hand, iterations, community = []):
         #using code from lecture-ref2 and 3, slightly modified for river of blood
@@ -173,6 +222,7 @@ class Player(Bot):
                         
                         while is_red[0]: #next guessed to be red
                             #draw additional red card
+                            print("ADD RED")
                             _COMM += 1
                             num_cards_used += 1
                             num_red_seen += 1
@@ -196,6 +246,7 @@ class Player(Bot):
                 is_red = random.choices(population = [True, False], weights = [red_prob, 1 - red_prob], k = 1)
 
                 while is_red[0]:
+                    print("ADD RED")
                     _COMM += 1
                     num_cards_used += 1
                     num_red_seen += 1
@@ -237,12 +288,10 @@ class Player(Bot):
     def handle_round_over(self, game_state, terminal_state, active):
         '''
         Called when a round ends. Called NUM_ROUNDS times.
-
         Arguments:
         game_state: the GameState object.
         terminal_state: the TerminalState object.
         active: your player's index.
-
         Returns:
         Nothing.
         '''
@@ -251,11 +300,7 @@ class Player(Bot):
         #street = previous_state.street  # int of street representing when this round ended
         #my_cards = previous_state.hands[active]  # your cards
         #opp_cards = previous_state.hands[1-active]  # opponent's cards or [] if not revealed
-        
-        #our last action was a 3-bet, meaning opponent folded to our 3bet:
-        if self.three_bet:
-            print("OPPONENT FOLDED TO OUR 3BET")
-            self.opp_fold_3bets += 1
+        pass
 
     def hand_convert(self, card1, card2):
         '''
@@ -283,6 +328,7 @@ class Player(Bot):
                 to_return = (card2[2][0], card1[2][0] + 's')
             else:
                 to_return = (card2[2][0], card1[2][0] + 'o')
+        print(to_return)
         return to_return
 
 
@@ -317,12 +363,10 @@ class Player(Bot):
         '''
         Where the magic happens - your code should implement this function.
         Called any time the engine needs an action from your bot.
-
         Arguments:
         game_state: the GameState object.
         round_state: the RoundState object.
         active: your player's index.
-
         Returns:
         Your action.
         '''
@@ -339,110 +383,113 @@ class Player(Bot):
         my_contribution = STARTING_STACK - my_stack  # the number of chips you have contributed to the pot
         opp_contribution = STARTING_STACK - opp_stack  # the number of chips your opponent has contributed to the pot
         
-        #0 index - 2 index: 70 percent, 82.5 percent hand, 91 percent hand - opening
-        #3 index - 5 index: merged hands (default), polarized (loose) - defending with bluffs, (5) tight
+        #0 index - 2 index: 70 percent, 82.5 percent hand, 91 percent hand
+        #3 index - 4 index: value hands (tight), polarized (loose)
         ranges = {
-            'A': {'A': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 
-                    'Ko': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '2o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], 
-                    'Ks': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], 
+            'A': {'A': ['Raise', 'Raise', 'Raise', 'Raise'], 
+                    'Ko': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'], '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 
+                    'Ks': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
             },
 
-            'K': {'K': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], 
+            'K': {'K': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
             },
 
-            'Q': {'Q': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], 
+            'Q': {'Q': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
             },
 
-            'J': {'J': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            'J': {'J': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
             },
 
-            'T': {'T': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'], '9s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
-
-            },
-
-            '9': {'9': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call']
+            'T': {'T': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Raise', 'Fold'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
 
             },
 
-            '8': {'8': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'],
-                 '7o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '7s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            '9': {'9': ['Raise', 'Raise', 'Raise', 'Raise'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call']
 
             },
 
-            '7': {'7': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Raise'],
-                 '6o': ['Raise', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '6s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            '8': {'8': ['Raise', 'Raise', 'Raise', 'Raise'],
+                 '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
 
             },
 
-            '6': {'6': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'],
-                 '5o': ['Fold', 'Raise', 'Raise', 'Fold', 'Fold', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                   '5s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            '7': {'7': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
 
             },
 
-            '5': {'5': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                 '4o': ['Fold', 'Raise', 'Raise', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                 '4s': ['Raise', 'Raise', 'Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            '6': {'6': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
             },
 
-            '4': {'4': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'],
-                 '3o': ['Fold', 'Fold', 'Fold', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Raise', 'Fold'],
-                   '3s': ['Raise', 'Raise', 'Raise', 'Call', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call', 'Raise', 'Call'], 
+            '5': {'5': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                 '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
             },
 
-            '3': {'3': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call'], 
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold', 'Raise', 'Fold'],
-                    '2s': ['Call', 'Call', 'Raise', 'Call', 'Raise', 'Call']},
+            '4': {'4': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+            },
 
-            '2': {'2': ['Raise', 'Raise', 'Raise', 'Call', 'Call', 'Call']
+            '3': {'3': ['Raise', 'Raise', 'Raise', 'Call'], 
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
+                    '2s': ['Call', 'Call', 'Raise', 'Call']},
+
+            '2': {'2': ['Raise', 'Raise', 'Raise', 'Call']
             }
         
         }
         
         min_raise, max_raise = round_state.raise_bounds() 
         my_action = None
-        print(my_cards)
+        
 
         pot_total = my_contribution + opp_contribution
 
         #calculate p of cards
         monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
         #guess_p = self.guess_next_probability(my_cards, board_cards, street)
+        print(my_cards)
+        print(board_cards)
+        print("monte", monte_carlo_p)
 
         p = monte_carlo_p
 
@@ -472,21 +519,7 @@ class Player(Bot):
         #temporary raise_amount logic
                 # raise logic: kill early, raise higher (TAG)
                 #kill preflop if nothing raised this round
-
-#COLLECT INFORMATION: our previous action this game was a 3bet
-        if self.three_bet:
-            self.three_bet = False #reset for next action this round
-            #opp either called or raised three-bet:
-
-            if street < 3: #raised 3-bet, but still in pre-flop: opponent raised
-                print("OPPONENT RAISED AFTER OUR 3BET")
-                self.opp_raise_3bets += 1 #opponent raised, or else round would have ended and three_bet reset
-            else: #raised 3-bet, but now in flop means opponent called
-                print("OPPONENT CALLED TO OUR 3BET")
-                self.opp_call_3bets += 1
-
-            #fold: handled in handle_round_over (our last action was a 3bet, opponent folded)
-
+        print(my_pip)
 
         #TODO: collect opponent information and adjust
         if street < 3: #preflop: implement folding early via bill chen formula
@@ -494,7 +527,7 @@ class Player(Bot):
             card2 = my_cards[1]
             if continue_cost > 0: #raise
                 #opening raise from small blind: continue_cost = 1, my_pip = 1
-                #adjust later: currently 2.5 x BB, safe wide range of openings
+                #adjust later: currently 2.5 x BB
                 if continue_cost == 1 and my_pip == 1: 
                     print("SMALL BLIND INITIAL")
                     hand = self.hand_convert(card1, card2)
@@ -510,32 +543,18 @@ class Player(Bot):
                     elif decision == "Fold":
                         return FoldAction()
 
-                #three-bet: our first raise encountered by another player this round (non-including small blind)
+                #three-bet: our first raise encountered this game (non-including small blind)
                 #adjust to opponents!! 
-                elif self.first_raise: #first defense - initially tight
-                    print("Time to 3 BET")
+                elif self.first_raise:
+                    print("3 BET")
                     self.first_raise = False
                     #three-betting
                     hand = self.hand_convert(card1, card2)
-                    decision = ranges[hand[0]][hand[1]][self.three_bet_decision]
+                    decision = ranges[hand[0]][hand[1]][3]
 
-                    # #if high fold rate to 3-bets: randomly raise folds (bluff)
-                    # if self.fold_to_3bet > 0.75 and self.my_3bets > 10:
-                    #     if decision == "Fold":
-                    #         if random.random() > 0.3:
-                    #             decision == "Raise"
-                    # elif self.fold_to_3bet < 0.25 and self.my_3bets> 10: #low fold rate to 3-bets
-                    #     if decision == "Raise": #high high value hand
-                    #         if random.random() > 0.3 and p > 0.5:
-                    #             self.three_bet_sizing = 4
-
-                    #if low fold rate: 
                     if decision == "Raise":
-                        #raise 3x amount of opponent's bet: 3 * opp_pip (how much opponent contributed this round of betting )
-                        print("WE HAVE 3-BET")
-                        self.three_bet = True #indicator for next action that our previous action was a 3-bet
-                        self.my_3bets += 1 #increase num times we 3bet
-                        raise_amount = self.three_bet_sizing * opp_pip
+                        #raise 3x amount of continue cost
+                        raise_amount = continue_cost * 3
                         return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                     
                     elif decision == "Call": #only call available
@@ -549,8 +568,8 @@ class Player(Bot):
                     
 
                 else:
-                    #raise beyond first raise, #latter defense: 2.2 * raise?
-
+                    #raise beyond first raise
+                    print("CONTINUED RAISE")
                     raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
                 
                     raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
@@ -571,8 +590,8 @@ class Player(Bot):
 
                     elif CheckAction in legal_actions: 
                         temp_action = CheckAction()
-                    else:                        
-                        return FoldAction()
+                    else:
+                        temp_action = FoldAction()
 
                     
                     #if pay to keep playing: raise, call, or fold
@@ -612,9 +631,7 @@ class Player(Bot):
                     return CheckAction()
 
         
-        else: 
-            
-            #postflop, 66 percent of pot. normal play - adjust based on opponent? if opponent folds a lot, play tighter
+        else: #postflop, 66 percent of pot. normal play
             raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
         
             raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
