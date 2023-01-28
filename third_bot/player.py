@@ -25,6 +25,7 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
+        #opponents response to 3-bets
         self.my_3bets = 0
         self.opp_raise_3bets = 0
         self.opp_call_3bets = 0
@@ -35,6 +36,14 @@ class Player(Bot):
         self.my_button_raises = 0
         self.button_fold_to_preflop = 0
 
+
+        #opponents 3-bet percentages
+        self.my_firstraise = 0
+        self.opp_raise_firstraise = 0
+        self.opp_call_firstraise = 0
+        self.opp_fold_firstraise = 0
+        self.firstraise_ratio = 0 #percentage
+        self.handle_opponent_3bet = "Default"
     def handle_new_round(self, game_state, round_state, active):
         '''
         Called when a new round starts. Called NUM_ROUNDS times.
@@ -47,16 +56,25 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
+        #3 sizing: https://upswingpoker.com/heads-up-poker-tips-20000-match, but with less
+        #4 sizing: same
+        #5 sizing: https://www.pokervip.com/strategy-articles/heads-up-no-limit-hold-em/3-betting-in-heads-up-poker
+
         #my_bankroll = game_state.bankroll  # the total number of chips you've gained or lost from the beginning of the game to the start of this round
         #game_clock = game_state.game_clock  # the total number of seconds your bot has left to play this game
         #round_num = game_state.round_num  # the round number from 1 to NUM_ROUNDS
         #my_cards = round_state.hands[active]  # your cards
         #big_blind = bool(active)  # True if you are the big blind
-        self.first_raise = True #beginning of each WHOLE GAME
+        self.first_raise = True #beginning of each WHOLE GAME (our first raise encountered)
         self.three_bet = False #indicator that we three-bet in our previous action
-
+        
+        self.we_have_firstraised = False #we have raised this round
+        self.we_just_firstraised = False #our previous action was OUR first-raise
+        
+        self.small_blind = False
         print("NEW ROUND")
         #INITIALLY PLAY 100 until adjusting values to collect data:
+
 
         if self.my_3bets < 10:
             print(self.my_3bets, self.opp_raise_3bets, self.opp_call_3bets, self.opp_fold_3bets, "ALL")
@@ -65,7 +83,6 @@ class Player(Bot):
             self.three_bet_sizing = 3
             self.three_bet_decision = 3
             
-            return None
 
         else:
             print("ABOVE 10 3 bets")
@@ -80,31 +97,48 @@ class Player(Bot):
             self.three_bet_sizing = 3 #3 * the continue cost
             self.three_bet_decision = 3 #value hands
 
-            if self.fold_to_3bet <= 0.2: #folds rarely to 3-bets: play tight, high value cards when 3-betting
-                self.three_bet_sizing = 3.5  
+            #4 to make up for the reduced number of 3-bets we do, get more from it
+            if self.fold_to_3bet <= 0.25: #folds rarely to 3-bets: play tight, high value cards when 3-betting
+                self.three_bet_sizing = 4
                 self.three_bet_decision = 5 #only 3 bet for high value cards
 
             elif self.fold_to_3bet >= 0.65: #folds alot, play loose - lower bet since a lot of bets?
-                self.three_bet_sizing = 2.75 #variable: if weak, 2.75
+                self.three_bet_sizing = 2.5 #variable: if weak, 2.5 -> 3
                 self.three_bet_decision = 4 #3-bet a wide range polarized loose
             else:
                 #default:
-                self.three_bet_sizing = 2.75
+                self.three_bet_sizing = 3
                 self.three_bet_decision = 3 #merged default
 
+        if self.my_firstraise >= 100:
+            self.firstraise_ratio = self.opp_raise_firstraise / self.my_firstraise
+            print("First raise ratio",self.firstraise_ratio)
 
 
+            if self.firstraise_ratio <= 0.2:
+                self.handle_opponent_3bet = "Tight"
+            elif self.firstraise_ratio >= 0.75:
+                self.handle_opponent_3bet = "Loose"
+            else:
+                self.handle_opponent_3bet = "Default"
+
+            print("play", self.handle_opponent_3bet)
+            
+
+
+
+        print("FIRST RAISE REACTIONS", self.my_firstraise, self.opp_raise_firstraise, self.opp_call_firstraise, self.opp_fold_firstraise)
         #get information, calculate numbers:total number of raises the opponent does, etc
         #update settings:
 
         #information: on how to 3-bet:
-            # opponent response to 3-bet
+            # opponent response t vo 3-bet
 
                 #calling 3-bets, raising 3-bets rather than folding: value hands
                     #pump up the bets sizing!
                 #folding to 3-bets: keep bluffs (polarized), size smaller bets
             
-            #opponents opening:
+            #opponents opening: !!
                 #opening button at very high frequency, 3-bet wide range of hands, size smaller bets
                 #opens a small percentage of hands, strong value hands, increase bet size
 
@@ -173,7 +207,7 @@ class Player(Bot):
                 
                         red_prob = ((26 - num_red_seen) / (52 - num_cards_used)) * 100
                         
-                        #guess whether next one is red or not
+                        # #guess whether next one is red or not
                         is_red = random.choices(population = [True, False], weights = [red_prob, 100 - red_prob], k = 1)
                         
                         while is_red[0]: #next guessed to be red
@@ -238,6 +272,160 @@ class Player(Bot):
 
         return p
 
+        
+        # deck = eval7.Deck()
+        # cur_hand = []
+        # community_cards = []
+        # num_red_seen = 0
+
+        # #setup cur_hand and deck
+        # for card in my_hand:
+        #     if card[1] == 'h' or card[1] == 'd':
+        #         num_red_seen += 1
+        #     cur_hand.append(eval7.Card(card))
+
+        # for card in cur_hand:
+        #     deck.cards.remove(card)
+
+        # #remove community cards from deck
+        # if community != []:
+        #     for card in community:
+        #         if card[1] == 'h' or card[1] == 'd':
+        #             num_red_seen += 1
+        #         community_cards.append(eval7.Card(card))
+
+        #     for card in community_cards:
+        #         deck.cards.remove(card)
+
+        # p = 0
+
+        # for i in range(iterations):
+        #     deck.shuffle()
+
+        #     #TODO: generate number of community cards (for now keep 5)
+
+        #     #simulate red river
+        #     #ratio: 52 total cards. reds: 26
+        #     # (26 - num_red_seen) / (52 - cards_used)
+        #     if len(community) >= 5:
+        #             if community[-1][1] == 'h' or community[-1][1] == 'd':
+
+        #                 alt_community_cards = []
+
+        #                 #peek at next
+        #                 next_card = deck.deal(1)[0]
+        #                 alt_community_cards.append(next_card)
+
+
+        #                 #keep drawing
+        #                 while next_card.suit in {1, 2}:
+        #                     next_card = deck.deal(1)[0] #just want card, add to list
+        #                     alt_community_cards.append(next_card)
+
+        #                 #done: showdown
+        #                 opp_hole = deck.deal(2) #list of 2
+
+        #                 our_hand = cur_hand + community_cards + alt_community_cards
+                        
+        #                 opp_hand = opp_hole + community_cards + alt_community_cards
+
+        #                 our_value = eval7.evaluate(our_hand)
+        #                 opp_value = eval7.evaluate(opp_hand)
+
+
+        #                 if our_value > opp_value:
+        #                     p += 2
+                        
+        #                 elif our_value == opp_value:
+        #                     p += 1
+
+        #                 else:
+        #                     p += 0
+
+                        
+        #                 #add all drawn back in (alt community and op hole)
+                        
+        #                 for card in alt_community_cards:
+        #                     deck.cards.append(card)
+
+        #                 for card in opp_hole:
+        #                     deck.cards.append(card)
+
+                        
+        #             else: #last showdown, done flipping
+        #                 _COMM = 0
+        #                 _OPP = 2
+
+        #                 draw = deck.peek(_COMM + _OPP)
+
+        #                 opp_hole = draw[:_OPP] 
+        #                 alt_community = draw[_OPP:]
+
+        #                 #generate hands
+        #                 our_hand = cur_hand + community_cards + alt_community
+        #                 opp_hand = opp_hole + community_cards + alt_community
+
+        #                 our_value = eval7.evaluate(our_hand)
+        #                 opp_value = eval7.evaluate(opp_hand)
+
+        #                 if our_value > opp_value:
+        #                     p += 2
+                        
+        #                 elif our_value == opp_value:
+        #                     p += 1
+
+        #                 else:
+        #                     p += 0
+
+
+                        
+        #     else:
+        #         _COMM = 5 - len(community) #num of community cards needed to draw
+
+        #         alt_community_cards = deck.deal(_COMM)
+        #         opp_hole = deck.deal(2)
+
+        #         next_card = alt_community_cards[-1]
+
+                
+        #         while next_card.suit in {1, 2}:
+        #             next_card = deck.deal(1)[0] #draw one
+        #             alt_community_cards.append(next_card)
+                
+
+
+        #         our_hand = cur_hand + community_cards + alt_community_cards
+        #         opp_hand = opp_hole + community_cards + alt_community_cards
+
+                
+
+        #         our_value = eval7.evaluate(our_hand)
+        #         opp_value = eval7.evaluate(opp_hand)
+
+        #         if our_value > opp_value:
+        #             p += 2
+
+        #         elif our_value == opp_value:
+        #             p += 1
+        #         else:
+        #             p += 0
+
+
+        #         #add all drawn back in (alt community and op hole)
+                        
+        #         for card in alt_community_cards:
+        #             deck.cards.append(card)
+
+        #         for card in opp_hole:
+        #             deck.cards.append(card)
+
+        # p = p / (2 * iterations)
+        # return p
+
+
+
+        
+
 
     def handle_round_over(self, game_state, terminal_state, active):
         '''
@@ -258,9 +446,14 @@ class Player(Bot):
         #opp_cards = previous_state.hands[1-active]  # opponent's cards or [] if not revealed
         
         #our last action was a 3-bet, meaning opponent folded to our 3bet:
+        self.small_blind = False
         if self.three_bet:
             print("OPPONENT FOLDED TO OUR 3BET")
             self.opp_fold_3bets += 1
+
+        if self.we_just_firstraised:
+            print("OPPONENT FOLDED OUR FIRST RAISE slay")
+            self.opp_fold_firstraise += 1
 
     def hand_convert(self, card1, card2):
         '''
@@ -310,11 +503,14 @@ class Player(Bot):
 
         elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
             temp_action = CallAction()
+            print("NONLEGAL")
 
         elif CheckAction in legal_actions: 
             temp_action = CheckAction()
+            print("NONLEGAL")
         else:
             temp_action = FoldAction()
+            print("NONLEGAL")
 
         return temp_action
 
@@ -493,6 +689,18 @@ class Player(Bot):
 
             #fold: handled in handle_round_over (our last action was a 3bet, opponent folded)
 
+        if self.we_just_firstraised: #our past action was a raise (don't modify we have)
+            self.we_just_firstraised = False
+
+            if street < 3:
+                #fix: discrepancy: doesn't track opponent's 3betting correctly with time to receive a 3-bet, since 
+                #time to receive a 3bet counts when its opponents first raise and we haven't raised yet
+                #this counts when we have raised, so counts 3-bets in it
+                print("OPPONENT RAISED, did a 3-bet, slay")
+                self.opp_raise_firstraise += 1
+            else:
+                print("OPPONENT CALLED OUR FIRST RAISE, slay")
+                self.opp_call_firstraise += 1
 
         #TODO: collect opponent information and adjust
         if street < 3: #preflop: implement folding early via bill chen formula
@@ -502,12 +710,21 @@ class Player(Bot):
                 #opening raise from small blind: continue_cost = 1, my_pip = 1
                 #adjust later: currently 2.5 x BB, safe wide range of openings
                 if continue_cost == 1 and my_pip == 1: 
+                    self.small_blind = True
                     print("SMALL BLIND INITIAL")
                     hand = self.hand_convert(card1, card2)
                     decision = ranges[hand[0]][hand[1]][1]
+                    raise_amount = 5
+                    #doesn't often raise
+
+                    if self.handle_opponent_3bet == "Tight": #opponent rarely raises to 3-bet, so wide range
+                            decision = ranges[hand[0]][hand[1]][2]
+                            raise_amount = 3
                 
                     if decision == "Raise":
-                        raise_amount = 5
+                        self.we_just_firstraised = True
+                        self.we_have_firstraised = True
+                        self.my_firstraise += 1
                         return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                     
                     elif decision == "Call": #only call available
@@ -519,67 +736,140 @@ class Player(Bot):
                 #three-bet: our first raise encountered by another player this round (non-including small blind)
                 #adjust to opponents!! 
                 elif self.first_raise: #first defense - initially tight
-                    print("Time to 3 BET")
+
                     self.first_raise = False
-                    #three-betting
                     hand = self.hand_convert(card1, card2)
-                    decision = ranges[hand[0]][hand[1]][self.three_bet_decision]
+                    if self.we_have_firstraised: #we already raised, now experiencing 3-bet from opponent
+                        print("Time to RECEIVE 3BET")
 
-                    # #if high fold rate to 3-bets: randomly raise folds (bluff)
-                    # if self.fold_to_3bet > 0.75 and self.my_3bets > 10:
-                    #     if decision == "Fold":
-                    #         if random.random() > 0.3:
-                    #             decision == "Raise"
-                    # elif self.fold_to_3bet < 0.25 and self.my_3bets> 10: #low fold rate to 3-bets
-                    #     if decision == "Raise": #high high value hand
-                    #         if random.random() > 0.3 and p > 0.5:
-                    #             self.three_bet_sizing = 4
-
-                    #if playing tight due to low frequency of fold, oftentimes get stuck since we fold and don't give 3-bets
-                    #allow more 3-betting when playing tight so we don't get stuck
-                    if self.three_bet_decision == 5 and self.above_ten:
-                        if ranges[hand[0]][hand[1]][3] == "Raise" and random.random() > 0.5 and p > 0.5:
-                            decision = "Raise"
-                            self.three_bet_sizing = 3
-
-                    #if playing loose: want to keep the pressure on in the pot odds:
-                    if self.three_bet_decision == 4 and self.above_ten:
-                        if decision == "Raise":
-                            if p > 0.5 and random.random() < self.fold_to_3bet: #the higher the fold percentage is, more likely to put in higher (put same pressure)
-                                self.three_bet_sizing = 3
+                        #SPECIAL: OPPONENT WILL PROBABLY WIN. call some raises, fold some calls
+                        if self.handle_opponent_3bet == "Tight": #opponent has big cards (likely)
+                            raise_amount = int(my_pip + continue_cost + (0.4)*(pot_total + continue_cost))
+                            if ranges[hand[0]][hand[1]][5] == "Raise": #play these, but play tight
+                                if random.random() < 0.5 and p > 0.5:
+                                    return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions) 
+                                else:
+                                    return CallAction()
+                            elif ranges[hand[0]][hand[1]][5] == "Call":
+                                if p >= 0.7: #occasionally call if strong
+                                    return CallAction()
+                                else:
+                                    return FoldAction()
                             else:
-                                self.three_bet_sizing = 2.5 #lower if weak
+                                return FoldAction()
+                            
+                        #use loose ranges: all raises raise, strong calls sometimes raise, folds sometimes called
+                        elif self.handle_opponent_3bet == "Loose": #opponent always 3-betting, call and 4bet a wider range
+                            raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
+                            if ranges[hand[0]][hand[1]][4] == "Raise":
+                                if p > 0.5:
+                                    return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions) 
+                                else:
+                                    return CallAction()
+                            elif ranges[hand[0]][hand[1]][4] == "Call":
+                                if p > 0.6:
+                                    return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                                else:
+                                    return CallAction()
+                            else:
+                                if p > 0.5 and random.random < 0.5: #always 3-betting, so widen range
+                                    return CallAction()
+                                else:
+                                    return FoldAction()
+                            
 
-                    #if suited reds, always raise
-                    if self.three_bet_decision in {3, 4, 5}:
-                        if len(hand[1]) == 2 and hand[1][1] == 's':
-                            if card1[1] == card2[1] and card1[1] in {'h', 'd'}: #red
-                                print("SUITED REDS")
+                        else: #handle normally, sometimes call if strongish
+                            raise_amount = int(my_pip + continue_cost + (2/3) * (pot_total + continue_cost))
+                    
+                            raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
+                    
+                            decision = ranges[hand[0]][hand[1]][3]
+
+                            if decision == "Raise":
+                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                            elif decision == "Call":
+                                return CallAction()
+                            else:
+                                if p > 0.5 and random.random() < 0.5:
+                                    return CallAction()
+                                else:
+                                    return FoldAction()
+                            
+
+
+                    else:
+                        print("Time to 3 BET")
+                        #three-betting, have not raised before
+
+                        decision = ranges[hand[0]][hand[1]][self.three_bet_decision]
+
+                        #issue: when big blind, and opponent always raises, we like always fold 
+                        if self.small_blind is False: #wider range
+                            self.three_bet_decision = 4 #keep a wide range
+                            print("BIG BLIND 3-BETTING")
+
+                        #if playing tight due to low frequency of fold, sometimes get stuck since we fold and don't give 3-bets, lose value
+                        #allow a little more 3-betting when playing tight so we don't get stuck, gather more data and move accordingly 
+                        if self.three_bet_decision == 5 and self.above_ten and decision != "Raise":
+                            #goes up to 50 percent
+                            if ranges[hand[0]][hand[1]][3] == "Raise" and random.random() > (0.35 + self.fold_to_3bet) and p > 0.5:
                                 decision = "Raise"
+                                print("Correction")
+                                self.three_bet_sizing = 3
+
+                        #if playing loose: want to keep the pressure on in the pot odds:
+                        if self.three_bet_decision == 4 and self.above_ten:
+                            if decision == "Raise":
+                                if p > 0.5 and random.random() < self.fold_to_3bet: #the higher the fold percentage is, more likely to put in higher (put same pressure)
+                                    self.three_bet_sizing = 3
+                                else:
+                                    self.three_bet_sizing = 2.5 #lower if weak
+
+                        #if suited reds, always raise
+                        if self.three_bet_decision in {3, 4, 5}:
+                            if len(hand[1]) == 2 and hand[1][1] == 's':
+                                if card1[1] == card2[1] and card1[1] in {'h', 'd'}: #red
+                                    print("SUITED REDS")
+                                    decision = "Raise"
+
+                                    if ranges[hand[0]][hand[1]][5] == "Raise": #very strong
+                                        self.three_bet_sizing = 4
+                                    elif ranges[hand[0]][hand[1]][3] == "Raise": #mid
+                                        self.three_bet_sizing = 3
+                                    else: #eh
+                                        self.three_bet_sizing = 2
 
 
-                    if decision == "Raise":
-                        #raise 3x amount of opponent's bet: 3 * opp_pip (how much opponent contributed this round of betting )
-                        print("WE HAVE 3-BET", self.three_bet_decision)
-                        self.three_bet = True #indicator for next action that our previous action was a 3-bet
-                        self.my_3bets += 1 #increase num times we 3bet
-                        raise_amount = self.three_bet_sizing * opp_pip
-                        return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
-                    
-                    elif decision == "Call": #only call available
-                        return CallAction()
-
-                    elif decision == "Fold": #don't always fold
-                        if p > pot_odds and p > 0.5:
+                        if decision == "Raise":
+                            #raise 3x amount of opponent's bet: 3 * opp_pip (how much opponent contributed this round of betting )
+                            print("WE HAVE 3-BET", self.three_bet_decision)
+                            if self.we_have_firstraised is False: #havent raised yet
+                                self.we_just_firstraised = True
+                                self.we_have_firstraised = True
+                                self.my_firstraise += 1
+                            self.three_bet = True #indicator for next action that our previous action was a 3-bet
+                            self.my_3bets += 1 #increase num times we 3bet
+                            raise_amount = self.three_bet_sizing * opp_pip
+                            return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                        
+                        elif decision == "Call": #only call available
                             return CallAction()
-                        else:
-                            return FoldAction()
+
+                        elif decision == "Fold": #don't always fold
+                            if self.three_bet_decision != 5:
+                                if p > pot_odds and p > 0.5:
+                                    return CallAction()
+                                else:
+                                    return FoldAction()
+
+                            else:
+                                return FoldAction()
+                        
                     
 
-                else:
-                    #raise beyond first raise, #latter defense: 2.2 * raise?
-
-                    raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
+                else: #follow same tight default strats
+                    #raised beyond our first raise encountered, meaning we already first raised, #latter defense: 2.2 * raise?
+                    raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
                 
                     raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
             
@@ -607,13 +897,14 @@ class Player(Bot):
                     if continue_cost > 0: 
                         
                         if p > pot_odds: #call or raise, don't fold
-                            if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
+                            if p > 0.65 and  random.random() < p: #bigger p is, more likely to raise
                                 my_action = temp_action #best we can do if want to raise
 
                             else:
                                 my_action = CallAction()
                         else: 
                         #   Fold
+        
                             my_action = FoldAction()
                     
                     else: #pay 0 to play, want to either raise or check
@@ -631,11 +922,20 @@ class Player(Bot):
                 hand = self.hand_convert(card1, card2)
                 #opponent limepd: use widest range
                 decision = ranges[hand[0]][hand[1]][2]
-            
+                raise_amount = 5 #base
+
+                #opponent rarely 3-bets when we raise them: put on a wider range but bet less
+                if self.handle_opponent_3bet == "Tight":
+                    decision = ranges[hand[0]][hand[1]][2]
+                    raise_amount = 4
+
                 if decision == "Raise":
-                    raise_amount = 6
                     temp_action = self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                     print(temp_action)
+                    if self.we_have_firstraised is False:
+                        self.we_have_firstraised = True
+                        self.we_just_firstraised = True
+                        self.my_firstraise += 1
                     return temp_action
                 else:
                     return CheckAction()
