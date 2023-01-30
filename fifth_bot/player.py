@@ -504,94 +504,94 @@ class Player(Bot):
         #raise, call, fold percentages:
 
         other_ranges = {
-            'A': {'A': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 
-                    'Ko': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Qo': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '4o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '3o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '2o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], 
-                    'Ks': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], 
+            'A': {'A': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 
+                    'Ko': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qo': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.15, 0.85, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.12, 0.88, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0.12, 0.88, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '4o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '3o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], '2o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], 
+                    'Ks': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.5, 0.5, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], 
             },
 
-            'K': {'K': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Qo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise',(0, 1, 0)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1)],
-                    '2o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], 
+            'K': {'K': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1,0,0)], 'Qo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.1, 0.9, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise',(0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)],
+                    '2o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
             },
 
-            'Q': {'Q': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Raise', 'Raise', 'Raise',(0, 0.75, 0.25)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5)],
-                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], 
+            'Q': {'Q': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0,0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise',(0, 0.75, 0.25), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)],
+                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
             },
 
-            'J': {'J': ['Raise', 'Raise', 'Raise', (1, 0, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1)], '3o': ['Fold', 'Raise', 'Raise', (0, 0, 1)],
-                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], 
+            'J': {'J': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
             },
 
-            'T': {'T': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Raise', (0, 0, 1)], '9s': ['Raise', 'Raise', 'Raise', (1, 0, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], 
-
-            },
-
-            '9': {'9': ['Raise', 'Raise', 'Raise', (1, 0, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0)]
+            'T': {'T': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '9s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
 
             },
 
-            '8': {'8': ['Raise', 'Raise', 'Raise', (1, 0, 0)],
-                 '7o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '7s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0)], 
+            '9': {'9': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.2, 0.8, 0)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)]
 
             },
 
-            '7': {'7': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                 '6o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0)], '5o': ['Fold', 'Raise', 'Raise', (0, 1, 0)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '6s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0)] 
+            '8': {'8': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.1, 0.9, 0)],
+                 '7o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '7s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0, 1)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
 
             },
 
-            '6': {'6': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                 '5o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0)], '4o': ['Fold', 'Fold', 'Raise', (0, 0.5, 0.5)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                   '5s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0)], 
+            '7': {'7': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '6o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '6s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)] 
 
             },
 
-            '5': {'5': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                 '4o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0)], '3o': ['Fold', 'Fold', 'Raise', (0, 0.25, 0.75)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                 '4s': ['Raise', 'Raise', 'Raise', (1, 0, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0)], 
+            '6': {'6': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '5o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                   '5s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
+
             },
 
-            '4': {'4': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                 '3o': ['Fold', 'Fold', 'Fold', (0, 0.25, 0.75)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                   '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0)], 
+            '5': {'5': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '4o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0.25, 0.75), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                 '4s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
             },
 
-            '3': {'3': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)], 
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1)],
-                    '2s': ['Call', 'Call', 'Raise', (0.2, 0.8, 0)]},
+            '4': {'4': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '3o': ['Fold', 'Fold', 'Fold', (0, 0.25, 0.75), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                   '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)], 
+            },
 
-            '2': {'2': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0)]
+            '3': {'3': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2s': ['Call', 'Call', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)]},
+
+            '2': {'2': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)]
             }
         
         }
@@ -655,7 +655,7 @@ class Player(Bot):
                         print("SMALL BLIND INITIAL")
                         
                         hand = self.hand_convert(card1, card2)
-                        decision = ranges[hand[0]][hand[1]][1]
+                        decision = ranges[hand[0]][hand[1]][1] #82 percent
                     
                         if decision == "Raise":
                             self.we_have_firstraised = True
@@ -674,10 +674,37 @@ class Player(Bot):
                         self.first_raise = False
                         #three-betting
                         hand = self.hand_convert(card1, card2)
-                        decision = ranges[hand[0]][hand[1]][3]
 
                         if self.we_have_firstraised:
                             print("WE RECEIVE 3-BET AS SMALL BLIND, BTN 4-BET")
+
+                            decision = other_ranges[hand[0]][hand[1]][4]
+
+                            raise_percentage = decision[0]
+                            call_percentage = decision[1]
+                            fold_percentage = decision[2]
+
+
+                            if raise_percentage + call_percentage + fold_percentage != 1:
+                                print("FALSE")
+
+                            raise_threshold = raise_percentage
+                            call_threshold = raise_threshold + call_percentage
+                            fold_threshold = call_threshold + fold_percentage
+
+                            print(raise_threshold, call_threshold, fold_threshold)
+
+                            x = random.random()
+                            print("x", x)
+
+                            if x <= raise_threshold:
+                                decision = "Raise"
+                            elif x <= call_threshold:
+                                decision = "Call"
+                            elif x <= fold_threshold:
+                                decision = "Fold"
+
+                            print("DECISION", decision)
 
                             if decision == "Raise":
                                 #raise 3x amount of continue cost
@@ -688,14 +715,11 @@ class Player(Bot):
                                 return CallAction()
 
                             elif decision == "Fold": #don't always fold
-                                if p > pot_odds and p > 0.5:
-                                    return CallAction()
-                                else:
-                                    return FoldAction()
+                                return FoldAction()
 
                         else:
-                            print("WE 3-BET AS SMALL BLIND") #not sure 
-
+                            print("WE 3-BET AS SMALL BLIND") #not sure: means we limped earlier, so only play valuable ones?
+                            decision = ranges[hand[0]][hand[1]][3]
                             if decision == "Raise":
                                 #raise 3x amount of continue cost
                                 raise_amount = continue_cost * 3
@@ -842,7 +866,7 @@ class Player(Bot):
                         hand = self.hand_convert(card1, card2)
 
 
-                        if self.we_have_firstraised:
+                        if self.we_have_firstraised: #use 3-bet ranges?
                             print("WE FOUR BET AS BIG BLIND")
                             decision = ranges[hand[0]][hand[1]][3]
                             if decision == "Raise":
@@ -884,7 +908,7 @@ class Player(Bot):
                                     decision = "Fold"
 
                             #protect against crazy bets if weak
-                            if scary > 0.2 and decision in {"Raise", "Call"}:
+                            if scary >= 0.2 and decision in {"Raise", "Call"}:
 
                                 if p < pot_odds and random.random() < 0.5:
                                     decision = "Fold"
@@ -908,7 +932,7 @@ class Player(Bot):
 
                     else:
                         #raise beyond first raise: BB 5TH BET
-                        print("CONTINUED RAISE")
+                        print("CONTINUED RAISE, 5BETTING AS BIG BLIND")
 
                         raise_amount = 400 #all in
                     
