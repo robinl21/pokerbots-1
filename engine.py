@@ -269,6 +269,7 @@ class Player():
         if self.socketfile is not None and self.game_clock > 0.:
             clause = ''
             try:
+                print(self.game_clock)
                 player_message[0] = 'T{:.3f}'.format(self.game_clock)
                 message = ' '.join(player_message) + '\n'
                 del player_message[1:]  # do not send redundant action history

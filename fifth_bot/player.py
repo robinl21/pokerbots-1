@@ -24,7 +24,205 @@ class Player(Bot):
         Nothing.
         '''
 
+        self.five_betranges = {'AA': (0.65, 0.35, 0), 'AKo': (1, 0, 0), 'AQo': (0, 1, 0), 'AJo': (0.1, 0.5, 0.4), 'ATo': (0, 0.1, 0.9)
+, 'AKs': (1, 0, 0), 'KK': (1, 0, 0), 'KQo': (0, 0.5, 0.5), 'KJo': (0, 0.1, 0.9), 'AQs': (0, 1, 0), 'KQs': (0, 1, 0), 'QQ': (1, 0, 0),
+'QJo': (0, 0.1, 0.9), 'AJs': (0, 1, 0), 'KJs': (0, 1, 0), 'QJs': (0, 1, 0), 'JJ': (1, 0, 0), 'ATs': (0, 1, 0), 'KTs': (0, 1, 0),
+'QTs': (0, 1, 0), 'JTs': (0, 1, 0), 'TT': (0.5, 0.5, 0), 'A9s': (0, 1, 0), 'K9s': (0, 1, 0), 'Q9s': (0, 1, 0), 'J9s': (0, 1, 0), 'T9s': (0, 1, 0), '99': (0, 0.82, 0.2),
+'A8s': (0.2, 0.5, 0.3), 'K8s': (0, 0.75, 0.25), 'Q8s': (0, 0.75, 0.25), 'J8s': (0, 0.75, 0.25), 'T8s': (0, 0.75, 0.25), '98s': (0, 1, 0), '88': (0, 1, 0), 'A7s': (0.2, 0.25, 0.65),
+'K7s': (0, 0.5, 0.5), '97s': (0, 0.75, 0.25), '87s': (0, 1, 0), '77': (0, 1, 0), 'A6s': (0, 0.25, 0.75), '76s': (0, 1, 0), '66': (0, 1, 0), 'A5s': (0, 1, 0), 
+'65s': (0, 1, 0), '55': (0, 1, 0), 'A4s': (0, 1, 0), '54s': (0, 1, 0), '44': (0, 0.5, 0.5), 'A3s': (0.2, 0.5, 0.3), '43s': (0, 0.5, 0.5), '33': (0, 0.2, 0.8),
+'A2s': (0.2, 0.5, 0.3), '22': (0, 0.2, 0.8) }
 
+
+                #0 index - 2 index: 70 percent, 82.5 percent hand, 91 percent hand
+        #3 index - 4 index: value hands (tight), polarized (loose)
+        self.ranges = {
+            'A': {'A': ['Raise', 'Raise', 'Raise', 'Raise'], 
+                    'Ko': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'], '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 
+                    'Ks': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'K': {'K': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'Q': {'Q': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'J': {'J': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Raise', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+            },
+
+            'T': {'T': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Raise', 'Fold'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '9': {'9': ['Raise', 'Raise', 'Raise', 'Raise'],
+                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call']
+
+            },
+
+            '8': {'8': ['Raise', 'Raise', 'Raise', 'Raise'],
+                 '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '7': {'7': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '6': {'6': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+
+            },
+
+            '5': {'5': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                 '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+            },
+
+            '4': {'4': ['Raise', 'Raise', 'Raise', 'Call'],
+                 '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
+                   '3s': ['Raise', 'Raise', 'Raise', 'Call'],
+                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
+            },
+
+            '3': {'3': ['Raise', 'Raise', 'Raise', 'Call'], 
+                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
+                    '2s': ['Call', 'Call', 'Raise', 'Call']},
+
+            '2': {'2': ['Raise', 'Raise', 'Raise', 'Call']
+            }
+        
+        }
+
+        #raise, call, fold percentages:
+
+        self.other_ranges = {
+            'A': {'A': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 
+                    'Ko': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qo': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.15, 0.85, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.12, 0.88, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0.12, 0.88, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '4o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '3o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], '2o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], 
+                    'Ks': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.5, 0.5, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], 
+            },
+
+            'K': {'K': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1,0,0)], 'Qo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.1, 0.9, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise',(0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)],
+                    '2o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
+            },
+
+            'Q': {'Q': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0,0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise',(0, 0.75, 0.25), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)],
+                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
+            },
+
+            'J': {'J': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
+            },
+
+            'T': {'T': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '9s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)],
+                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
+                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
+
+            },
+
+            '9': {'9': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.2, 0.8, 0)],
+                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)]
+
+            },
+
+            '8': {'8': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.1, 0.9, 0)],
+                 '7o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '7s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0, 1)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
+
+            },
+
+            '7': {'7': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '6o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '6s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)] 
+
+            },
+
+            '6': {'6': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '5o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                   '5s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
+
+            },
+
+            '5': {'5': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '4o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0.25, 0.75), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                 '4s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
+            },
+
+            '4': {'4': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                 '3o': ['Fold', 'Fold', 'Fold', (0, 0.25, 0.75), (0, 0, 1)],
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                   '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
+                    '2s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)], 
+            },
+
+            '3': {'3': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
+                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
+                    '2s': ['Call', 'Call', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)]},
+
+            '2': {'2': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)]
+            }
+        
+        }
     def handle_new_round(self, game_state, round_state, active):
         '''
         Called when a new round starts. Called NUM_ROUNDS times.
@@ -44,6 +242,8 @@ class Player(Bot):
 
         self.small_blind = False
         self.we_have_firstraised = False
+
+        self.street_encountered = dict() #add streets if encountered this round, meaning don't have to calculate monte_carlo
 
 
     # def guess_next_probability(self, my_hand, table_hand, street):
@@ -286,6 +486,157 @@ class Player(Bot):
 
         return p
 
+    def monte_carlo_second(self, my_hand, iterations, community = []):
+        deck = eval7.Deck()
+        cur_hand = []
+        community_cards = []
+        num_red_seen = 0
+
+        #setup cur_hand and deck
+        for card in my_hand:
+            if card[1] == 'h' or card[1] == 'd':
+                num_red_seen += 1
+            cur_hand.append(eval7.Card(card))
+
+        for card in cur_hand:
+            deck.cards.remove(card)
+
+        #remove community cards from deck
+        if community != []:
+            for card in community:
+                if card[1] == 'h' or card[1] == 'd':
+                    num_red_seen += 1
+                community_cards.append(eval7.Card(card))
+
+            for card in community_cards:
+                deck.cards.remove(card)
+
+        p = 0
+
+        for i in range(iterations):
+            deck.shuffle()
+
+            #TODO: generate number of community cards (for now keep 5)
+
+            #simulate red river
+            #ratio: 52 total cards. reds: 26
+            # (26 - num_red_seen) / (52 - cards_used)
+            if len(community) >= 5:
+                    if community[-1][1] == 'h' or community[-1][1] == 'd':
+
+                        alt_community_cards = []
+
+                        #peek at next
+                        next_card = deck.deal(1)[0]
+                        alt_community_cards.append(next_card)
+
+
+                        #keep drawing
+                        while next_card.suit in {1, 2}:
+                            next_card = deck.deal(1)[0] #just want card, add to list
+                            alt_community_cards.append(next_card)
+
+                        #done: showdown
+                        opp_hole = deck.deal(2) #list of 2
+
+                        our_hand = cur_hand + community_cards + alt_community_cards
+                        
+                        opp_hand = opp_hole + community_cards + alt_community_cards
+
+                        our_value = eval7.evaluate(our_hand)
+                        opp_value = eval7.evaluate(opp_hand)
+
+
+                        if our_value > opp_value:
+                            p += 2
+                        
+                        elif our_value == opp_value:
+                            p += 1
+
+                        else:
+                            p += 0
+
+                        
+                        #add all drawn back in (alt community and op hole)
+                        
+                        for card in alt_community_cards:
+                            deck.cards.append(card)
+
+                        for card in opp_hole:
+                            deck.cards.append(card)
+
+                        
+                    else: #last showdown, done flipping
+                        _COMM = 0
+                        _OPP = 2
+
+                        draw = deck.peek(_COMM + _OPP)
+
+                        opp_hole = draw[:_OPP] 
+                        alt_community = draw[_OPP:]
+
+                        #generate hands
+                        our_hand = cur_hand + community_cards + alt_community
+                        opp_hand = opp_hole + community_cards + alt_community
+
+                        our_value = eval7.evaluate(our_hand)
+                        opp_value = eval7.evaluate(opp_hand)
+
+                        if our_value > opp_value:
+                            p += 2
+                        
+                        elif our_value == opp_value:
+                            p += 1
+
+                        else:
+                            p += 0
+
+
+                        
+            else:
+                _COMM = 5 - len(community) #num of community cards needed to draw
+
+                alt_community_cards = deck.deal(_COMM)
+                opp_hole = deck.deal(2)
+
+                next_card = alt_community_cards[-1]
+
+                
+                while next_card.suit in {1, 2}:
+                    next_card = deck.deal(1)[0] #draw one
+                    alt_community_cards.append(next_card)
+                
+
+
+                our_hand = cur_hand + community_cards + alt_community_cards
+                opp_hand = opp_hole + community_cards + alt_community_cards
+
+                
+
+                our_value = eval7.evaluate(our_hand)
+                opp_value = eval7.evaluate(opp_hand)
+
+                if our_value > opp_value:
+                    p += 2
+
+                elif our_value == opp_value:
+                    p += 1
+                else:
+                    p += 0
+
+
+                #add all drawn back in (alt community and op hole)
+                        
+                for card in alt_community_cards:
+                    deck.cards.append(card)
+
+                for card in opp_hole:
+                    deck.cards.append(card)
+
+        p = p / (2 * iterations)
+        return p
+
+
 
     def handle_round_over(self, game_state, terminal_state, active):
         '''
@@ -330,7 +681,6 @@ class Player(Bot):
                 to_return = (card2[2][0], card1[2][0] + 's')
             else:
                 to_return = (card2[2][0], card1[2][0] + 'o')
-        print(to_return)
         return to_return
 
     def hand_convert_to_eval7(self, card1, card2):
@@ -365,7 +715,10 @@ class Player(Bot):
         if raise_amount > max_raise:
             raise_amount = max_raise
     
+        raise_amount = int(raise_amount)
         raise_cost = raise_amount - my_pip
+
+    
 
         if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
             temp_action = RaiseAction(raise_amount)
@@ -393,7 +746,6 @@ class Player(Bot):
         Returns:
         Your action.
         '''
-        #borrows some code from lecture 2 reference (logic for actions)
         legal_actions = round_state.legal_actions()  # the actions you are allowed to take
         street = round_state.street  # int representing pre-flop, flop, turn, or river respectively
         my_cards = round_state.hands[active]  # your cards
@@ -406,199 +758,10 @@ class Player(Bot):
         my_contribution = STARTING_STACK - my_stack  # the number of chips you have contributed to the pot
         opp_contribution = STARTING_STACK - opp_stack  # the number of chips your opponent has contributed to the pot
         
-        #0 index - 2 index: 70 percent, 82.5 percent hand, 91 percent hand
-        #3 index - 4 index: value hands (tight), polarized (loose)
-        ranges = {
-            'A': {'A': ['Raise', 'Raise', 'Raise', 'Raise'], 
-                    'Ko': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'], '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 
-                    'Ks': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
-            },
 
-            'K': {'K': ['Raise', 'Raise', 'Raise', 'Raise'], 'Qo': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '2o': ['Raise', 'Raise', 'Raise', 'Fold'], 'Qs': ['Raise', 'Raise', 'Raise', 'Raise'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
-            },
-
-            'Q': {'Q': ['Raise', 'Raise', 'Raise', 'Raise'], 'Jo': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Raise', 'Raise', 'Raise', 'Fold'], '3o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Js': ['Raise', 'Raise', 'Raise', 'Raise'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
-            },
-
-            'J': {'J': ['Raise', 'Raise', 'Raise', 'Raise'], 'To': ['Raise', 'Raise', 'Raise', 'Fold'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Raise', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Raise', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Raise', 'Raise', 'Fold'], 'Ts': ['Raise', 'Raise', 'Raise', 'Raise'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
-            },
-
-            'T': {'T': ['Raise', 'Raise', 'Raise', 'Raise'], '9o': ['Raise', 'Raise', 'Raise', 'Fold'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Raise', 'Fold'], '9s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Raise', 'Raise', 'Raise', 'Call'], 
-
-            },
-
-            '9': {'9': ['Raise', 'Raise', 'Raise', 'Raise'],
-                    '8o': ['Raise', 'Raise', 'Raise', 'Fold'], '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '8s': ['Raise', 'Raise', 'Raise', 'Call'], '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call']
-
-            },
-
-            '8': {'8': ['Raise', 'Raise', 'Raise', 'Raise'],
-                 '7o': ['Raise', 'Raise', 'Raise', 'Fold'], '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '7s': ['Raise', 'Raise', 'Raise', 'Call'], '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
-
-            },
-
-            '7': {'7': ['Raise', 'Raise', 'Raise', 'Call'],
-                 '6o': ['Raise', 'Raise', 'Raise', 'Fold'], '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '6s': ['Raise', 'Raise', 'Raise', 'Call'], '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Call', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
-
-            },
-
-            '6': {'6': ['Raise', 'Raise', 'Raise', 'Call'],
-                 '5o': ['Fold', 'Raise', 'Raise', 'Fold'], '4o': ['Fold', 'Fold', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                   '5s': ['Raise', 'Raise', 'Raise', 'Call'], '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
-
-            },
-
-            '5': {'5': ['Raise', 'Raise', 'Raise', 'Call'],
-                 '4o': ['Fold', 'Raise', 'Raise', 'Fold'], '3o': ['Fold', 'Fold', 'Raise', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                 '4s': ['Raise', 'Raise', 'Raise', 'Call'], '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
-            },
-
-            '4': {'4': ['Raise', 'Raise', 'Raise', 'Call'],
-                 '3o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold'],
-                   '3s': ['Raise', 'Raise', 'Raise', 'Call'],
-                    '2s': ['Call', 'Raise', 'Raise', 'Call'], 
-            },
-
-            '3': {'3': ['Raise', 'Raise', 'Raise', 'Call'], 
-                    '2o': ['Fold', 'Fold', 'Fold', 'Fold', 'Fold'],
-                    '2s': ['Call', 'Call', 'Raise', 'Call']},
-
-            '2': {'2': ['Raise', 'Raise', 'Raise', 'Call']
-            }
-        
-        }
-
-        #raise, call, fold percentages:
-
-        other_ranges = {
-            'A': {'A': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 
-                    'Ko': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qo': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.15, 0.85, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.12, 0.88, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0.12, 0.88, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0.1, 0.75, 0.15)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.1, 0.2, 0.7)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '4o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.2, 0.6, 0.2)], '3o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], '2o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0.15, 0.2, 0.65)], 
-                    'Ks': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.5, 0.5, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], 
-            },
-
-            'K': {'K': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1,0,0)], 'Qo': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0.1, 0.9, 0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise',(0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)],
-                    '2o': ['Raise', 'Raise', 'Raise', (0, 0.9, 0.1), (0, 0, 1)], 'Qs': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.50, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
-            },
-
-            'Q': {'Q': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0,0)], 'Jo': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise',(0, 0.75, 0.25), (0, 0, 1)], '4o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)],
-                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Js': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
-            },
-
-            'J': {'J': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], 'To': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 1, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Raise', 'Raise', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], 'Ts': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '9s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.35, 0.65, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
-            },
-
-            'T': {'T': ['Raise', 'Raise', 'Raise', (1, 0, 0), (1, 0, 0)], '9o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.6, 0.4)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Raise', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '9s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)],
-                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
-                    '2s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
-
-            },
-
-            '9': {'9': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.2, 0.8, 0)],
-                    '8o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '7o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '8s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '7s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], '3s': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)]
-
-            },
-
-            '8': {'8': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0.1, 0.9, 0)],
-                 '7o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0.1, 0.9)], '6o': ['Raise', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 0.35, 0.65), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '7s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '6s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0, 1)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], 
-
-            },
-
-            '7': {'7': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                 '6o': ['Raise', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '5o': ['Fold', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '6s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '5s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)], '3s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0, 1)] 
-
-            },
-
-            '6': {'6': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                 '5o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '4o': ['Fold', 'Fold', 'Raise', (0, 0.5, 0.5), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0, 1), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                   '5s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '4s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
-
-            },
-
-            '5': {'5': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                 '4o': ['Fold', 'Raise', 'Raise', (0.1, 0.9, 0), (0, 0, 1)], '3o': ['Fold', 'Fold', 'Raise', (0, 0.25, 0.75), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                 '4s': ['Raise', 'Raise', 'Raise', (1, 0, 0), (0, 1, 0)], '3s': ['Raise', 'Raise', 'Raise', (0.75, 0.25, 0), (0, 1, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0, 1, 0), (0, 0.5, 0.5)], 
-            },
-
-            '4': {'4': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                 '3o': ['Fold', 'Fold', 'Fold', (0, 0.25, 0.75), (0, 0, 1)],
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                   '3s': ['Raise', 'Raise', 'Raise', (0.5, 0.5, 0), (0, 1, 0)],
-                    '2s': ['Call', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)], 
-            },
-
-            '3': {'3': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)], 
-                    '2o': ['Fold', 'Fold', 'Fold', (0, 0, 1), (0, 0, 1)],
-                    '2s': ['Call', 'Call', 'Raise', (0.2, 0.8, 0), (0, 0.5, 0.5)]},
-
-            '2': {'2': ['Raise', 'Raise', 'Raise', (0.2, 0.8, 0), (0, 1, 0)]
-            }
-        
-        }
 
         if my_pip == 1 and continue_cost == 1 and street < 3:
             self.small_blind = True
-            print("I AM SMALL BLIND")
         
         min_raise, max_raise = round_state.raise_bounds() 
         my_action = None
@@ -606,12 +769,22 @@ class Player(Bot):
 
         pot_total = my_contribution + opp_contribution
 
-        #calculate p of cards
-        monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
+        #calculate p of cards: if already calculated for this street 
+        print("street", street)
+        if street in self.street_encountered: #already calculated this round, just get
+            monte_carlo_p = self.street_encountered[street]
+
+        else:
+            if street < 3:
+                monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
+                self.street_encountered[street] = monte_carlo_p
+            else:
+                monte_carlo_p = self.monte_carlo(my_cards, 500, board_cards)
+                self.street_encountered[street] = monte_carlo_p
+
+
         #guess_p = self.guess_next_probability(my_cards, board_cards, street)
-        print(my_cards)
-        print(board_cards)
-        print("monte", monte_carlo_p)
+
 
         p = monte_carlo_p
 
@@ -630,18 +803,16 @@ class Player(Bot):
             if continue_cost > 50:
                 scary= 0.35
 
-        print("p", p)
         prefix_p = p #before scary modification
         p = max([0, p - scary])
-        print("fixed p", p)
+
 
         pot_odds = continue_cost / (pot_total + continue_cost) #p*pot_total + (1-p)*cost_to_continue (don't care about previous sunk costs)
-        print("pot odds", pot_odds)
+
 
         #temporary raise_amount logic
                 # raise logic: kill early, raise higher (TAG)
                 #kill preflop if nothing raised this round
-        print(my_pip)
 
         #TODO: collect opponent information and adjust
         if self.small_blind:
@@ -652,10 +823,9 @@ class Player(Bot):
                     #opening raise from small blind: continue_cost = 1, my_pip = 1
                     #adjust later: currently 2.5 x BB
                     if continue_cost == 1 and my_pip == 1: 
-                        print("SMALL BLIND INITIAL")
                         
                         hand = self.hand_convert(card1, card2)
-                        decision = ranges[hand[0]][hand[1]][1] #82 percent
+                        decision = self.ranges[hand[0]][hand[1]][1] #82 percent
                     
                         if decision == "Raise":
                             self.we_have_firstraised = True
@@ -667,35 +837,26 @@ class Player(Bot):
 
                         elif decision == "Fold":
                             return FoldAction()
-
-                    #three-bet: our first raise encountered this game (non-including small blind)
-                    #adjust to opponents!! 
                     elif self.first_raise:
                         self.first_raise = False
-                        #three-betting
                         hand = self.hand_convert(card1, card2)
 
                         if self.we_have_firstraised:
-                            print("WE RECEIVE 3-BET AS SMALL BLIND, BTN 4-BET")
 
-                            decision = other_ranges[hand[0]][hand[1]][4]
+                            #4-betting
+                            decision = self.other_ranges[hand[0]][hand[1]][4]
 
                             raise_percentage = decision[0]
                             call_percentage = decision[1]
                             fold_percentage = decision[2]
 
 
-                            if raise_percentage + call_percentage + fold_percentage != 1:
-                                print("FALSE")
-
                             raise_threshold = raise_percentage
                             call_threshold = raise_threshold + call_percentage
                             fold_threshold = call_threshold + fold_percentage
 
-                            print(raise_threshold, call_threshold, fold_threshold)
 
                             x = random.random()
-                            print("x", x)
 
                             if x <= raise_threshold:
                                 decision = "Raise"
@@ -704,197 +865,36 @@ class Player(Bot):
                             elif x <= fold_threshold:
                                 decision = "Fold"
 
-                            print("DECISION", decision)
-
+                            #4-betting
+                            #raise some strong calls
                             if decision == "Raise":
                                 #raise 3x amount of continue cost
-                                raise_amount = 46
+                                raise_amount = 3 * opp_pip
+                                #sometimes call really good hands: build pot value
+                                if p > 0.7 and random.random() < 0.3:
+                                    return CallAction()
                                 return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                             
                             elif decision == "Call": #only call available
+                                if p < pot_odds and random.random() < 0.5: #randomness (play tight)
+                                    return FoldAction()
+                                if p > 0.5 and random.random() < 0.5:
+                                    raise_amount = 2 * opp_pip
+                                    return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                                 return CallAction()
 
                             elif decision == "Fold": #don't always fold
+                                if p > 0.5 and random.random() < 0.5: #4bet if strong
+                                    return CallAction()
                                 return FoldAction()
 
                         else:
-                            print("WE 3-BET AS SMALL BLIND") #not sure: means we limped earlier, so only play valuable ones?
-                            decision = ranges[hand[0]][hand[1]][3]
-                            if decision == "Raise":
-                                #raise 3x amount of continue cost
-                                raise_amount = continue_cost * 3
-                                self.we_have_firstraised = True
-                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
-                            
-                            elif decision == "Call": #only call available
-                                return CallAction()
-
-                            elif decision == "Fold": #don't always fold
-                                if p > pot_odds and p > 0.5:
-                                    return CallAction()
-                                else:
-                                    return FoldAction()
-
-                        
-
-                    else:
-                        #raise beyond first raise
-                        print("CONTINUED RAISE")
-                        print("ALL IN")
-                        raise_amount = 400
-
-                        raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
-                
-                        if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
-                            raise_amount = max_raise #all-in
-                        
-                        raise_cost = raise_amount - my_pip #cost to raise
-
-                        #legalize action here: Func
-
-                        # temp_action: best we can do if we want to raise/continue
-                        if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
-                            temp_action = RaiseAction(raise_amount)
-
-                        elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
-                            temp_action = CallAction()
-
-                        elif CheckAction in legal_actions: 
-                            temp_action = CheckAction()
-                        else:
-                            temp_action = FoldAction()
-
-                        
-                        #if pay to keep playing: raise, call, or fold
-                        if continue_cost > 0: 
-                            
-                            if p > pot_odds: #call or raise, don't fold
-                                if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
-                                    my_action = temp_action #best we can do if want to raise
-
-                                else:
-                                    my_action = CallAction()
-                            else: 
-                            #   Fold
-                                my_action = FoldAction()
-                        
-                        else: #pay 0 to play, want to either raise or check
-                            if random.random() < p:
-                                my_action = temp_action
-                            else:
-                                my_action = CheckAction()
-                        
-
-                        return my_action
-
-                else: #continue_cost == 0:
-                    print("BIG BLIND OPENING RAISE")
-                    #big blind first opening raise: same logic as small blind opening raise, except only raise/check
-                    hand = self.hand_convert(card1, card2)
-                    decision = ranges[hand[0]][hand[1]][1]
-                
-                    if decision == "Raise":
-                        raise_amount = 5
-                        self.we_have_firstraised = True
-                        temp_action = self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
-                        print(temp_action)
-                        return temp_action
-                    else:
-                        return CheckAction()
-
-            
-            else: #postflop, 66 percent of pot. normal play
-                raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
-            
-                raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
-        
-                if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
-                    raise_amount = max_raise #all-in
-                
-                raise_cost = raise_amount - my_pip #cost to raise
-
-                #legalize action here: Func
-
-                # temp_action: best we can do if we want to raise/continue
-                if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
-                    temp_action = RaiseAction(raise_amount)
-
-                elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
-                    temp_action = CallAction()
-
-                elif CheckAction in legal_actions: 
-                    temp_action = CheckAction()
-                else:
-                    temp_action = FoldAction()
-
-                
-                #if pay to keep playing: raise, call, or fold
-                if continue_cost > 0: 
-                    
-                    if p > pot_odds: #call or raise, don't fold
-                        if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
-                            my_action = temp_action #best we can do if want to raise
-
-                        else:
-                            my_action = CallAction()
-                    else: 
-                    #   Fold
-                        my_action = FoldAction()
-                
-                else: #pay 0 to play, want to either raise or check
-                    if random.random() < p:
-                        my_action = temp_action
-                    else:
-                        my_action = CheckAction()
-                
-
-                return my_action
-
-        else: #BIG BLIND PLAYING
-
-            if street < 3: #preflop: implement folding early via bill chen formula
-                card1 = my_cards[0]
-                card2 = my_cards[1]
-                if continue_cost > 0: #raise
-
-                    #three-bet: our first raise encountered this game (non-including small blind)
-                    #adjust to opponents!! 
-                    if self.first_raise:
-
-                        self.first_raise = False
-                        #three-betting
-                        hand = self.hand_convert(card1, card2)
-
-
-                        if self.we_have_firstraised: #use 3-bet ranges?
-                            print("WE FOUR BET AS BIG BLIND")
-                            decision = ranges[hand[0]][hand[1]][3]
-                            if decision == "Raise":
-                                #raise 3x amount of continue cost
-                                raise_amount = 3 * continue_cost
-                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
-                            
-                            elif decision == "Call": #only call available
-                                return CallAction()
-
-                            elif decision == "Fold": #don't always fold
-                                if p > pot_odds and p > 0.5:
-                                    return CallAction()
-                                else:
-                                    return FoldAction()
-
-                        else:
-                            print("WE 3BET AS BIG BLIND")
-
                             #use percentage ranges
-                            percentages = other_ranges[hand[0]][hand[1]][3]
+                            percentages = self.other_ranges[hand[0]][hand[1]][3]
 
                             raise_percentage = percentages[0]
                             call_percentage = percentages[1]
                             fold_percentage = percentages[2]
-
-                            if (raise_percentage + call_percentage + fold_percentage) != 1.0:
-                                print("ERROR!!!!")
 
                             if raise_percentage > 0: #either raise or call
                                 if random.random() < raise_percentage:
@@ -918,7 +918,7 @@ class Player(Bot):
 
                             if decision == "Raise":
                                 #raise 3x amount of continue cost
-                                raise_amount = 20 #10 * BB
+                                raise_amount = 20#10 * BB
                                 self.we_have_firstraised = True
                                 return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
                             
@@ -926,15 +926,277 @@ class Player(Bot):
                                 return CallAction()
 
                             elif decision == "Fold": #don't always fold, since sometimes strong
+                                if p > 0.6 and random.random() < 0.5:
+                                    return CallAction()
+                                return FoldAction()
+
+
+                        
+
+                    else:
+                        #fifth-bet
+                        raise_amount = int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
+
+                        raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
+                
+                        if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
+                            raise_amount = max_raise #all-in
+                        
+                        raise_cost = raise_amount - my_pip #cost to raise
+
+                        #legalize action here: Func
+
+                        # temp_action: best we can do if we want to raise/continue
+                        if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
+                            temp_action = RaiseAction(raise_amount)
+
+                        elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
+                            temp_action = CallAction()
+
+                        elif CheckAction in legal_actions: 
+                            temp_action = CheckAction()
+                        else:
+                            temp_action = FoldAction()
+
+                        
+                        #if pay to keep playing: raise, call, or fold
+                        if continue_cost > 0: 
+                            
+                            if p > pot_odds: #call or raise, don't fold
+                                if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
+                                    my_action = temp_action #best we can do if want to raise
+
+                                else:
+                                    my_action = CallAction()
+                            else: 
+                            #   Fold
+                                my_action = FoldAction()
+                        
+                        else: #pay 0 to play, want to either raise or check
+                            if random.random() < p:
+                                my_action = temp_action
+                            else:
+                                my_action = CheckAction()
+                        
+
+                        return my_action
+
+                else: #continue_cost == 0:
+                    #big blind first opening raise: same logic as small blind opening raise, except only raise/check
+                    hand = self.hand_convert(card1, card2)
+                    decision = self.ranges[hand[0]][hand[1]][1]
+                
+                    if decision == "Raise":
+                        raise_amount = 5
+                        self.we_have_firstraised = True
+                        temp_action = self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                        return temp_action
+                    else:
+                        return CheckAction()
+
+            
+            else: #postflop, 66 percent of pot. normal play
+                raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
+
+                if p > 0.5 and random.random() < 0.5:
+                    raise_amount = int(my_pip + continue_cost + (0.75)*(pot_total + continue_cost))
+            
+                raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
+        
+                if raise_amount > max_raise: #out of bounds (min > max or calculated > max), do max raise
+                    raise_amount = max_raise #all-in
+
+                
+                
+                raise_cost = raise_amount - my_pip #cost to raise
+
+                #legalize action here: Func
+
+                # temp_action: best we can do if we want to raise/continue
+                if (RaiseAction in legal_actions and (raise_cost <= my_stack)): #raise legal
+                    temp_action = RaiseAction(raise_amount)
+
+                elif (CallAction in legal_actions and (continue_cost <= my_stack)): #continue legal
+                    temp_action = CallAction()
+
+                elif CheckAction in legal_actions: 
+                    temp_action = CheckAction()
+                else:
+                    temp_action = FoldAction()
+
+                
+                #if pay to keep playing: raise, call, or fold
+                if continue_cost > 0: 
+                    
+                    if p > pot_odds: #call or raise, don't fold
+                        if p > 0.5 and  random.random() < p: #bigger p is, more likely to raise
+                            my_action = temp_action #best we can do if want to raise
+
+                        else:
+                            my_action = CallAction()
+                    else: 
+                    #   Fold
+                        my_action = FoldAction()
+                
+                else: #pay 0 to play, want to either raise or check. #opponent called
+                    if p > 0.5 or random.random() < (p + 0.1):
+                        my_action = temp_action
+                    else:
+                        my_action = CheckAction()
+                
+
+                return my_action
+
+        else: #BIG BLIND PLAYING
+
+            if street < 3: #preflop: implement folding early via bill chen formula
+                card1 = my_cards[0]
+                card2 = my_cards[1]
+                if continue_cost > 0: #raise
+
+                    #three-bet: our first raise encountered this game (non-including small blind)
+                    #adjust to opponents!! 
+                    if self.first_raise:
+
+                        self.first_raise = False
+                        #three-betting
+                        hand = self.hand_convert(card1, card2)
+
+
+                        if self.we_have_firstraised: #use small blind 4-bet ranges?
+
+                            decision = self.other_ranges[hand[0]][hand[1]][4] #
+
+                            raise_percentage = decision[0]
+                            call_percentage = decision[1]
+                            fold_percentage = decision[2]
+
+
+
+                            raise_threshold = raise_percentage
+                            call_threshold = raise_threshold + call_percentage
+                            fold_threshold = call_threshold + fold_percentage
+
+
+                            x = random.random()
+
+                            if x <= raise_threshold:
+                                decision = "Raise"
+                            elif x <= call_threshold:
+                                decision = "Call"
+                            elif x <= fold_threshold:
+                                decision = "Fold"
+
+
+                            if decision == "Raise":
+                                #raise 3x amount of continue cost
+                                raise_amount = 46
+                                if p > 0.5 and random.random() < 0.5:
+                                    return CallAction()
+                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                            
+                            elif decision == "Call": #only call available
+                                return CallAction()
+
+                            elif decision == "Fold": #big blind: fold more
+                                if p > 0.6 and random.random() < 0.5: #call if strong
+                                    return CallAction()
+                                return FoldAction()
+
+                        else:
+
+                            #use percentage ranges, 3-betting
+                            percentages = self.other_ranges[hand[0]][hand[1]][3]
+
+                            raise_percentage = percentages[0]
+                            call_percentage = percentages[1]
+                            fold_percentage = percentages[2]
+
+                            if raise_percentage > 0: #either raise or call
+                                if random.random() < raise_percentage:
+                                    decision = "Raise"
+                                else:
+                                    decision = "Call"
+                            else: #either fold or call
+                                if random.random() < call_percentage:
+                                    decision = "Call"
+                                else:
+                                    decision = "Fold"
+
+                            #protect against crazy bets if weak
+                            if scary >= 0.2 and decision in {"Raise", "Call"}:
+
+                                if p < pot_odds and random.random() < 0.5:
+                                    decision = "Fold"
+
+
+
+                            #raise strong calls, fold weak calls
+                            if decision == "Raise":
+                                #raise 3x amount of continue cost
+                                raise_amount = 20 #10 * BB
+                                self.we_have_firstraised = True
+                                if p < pot_odds and random.random() < 0.5:
+                                    return CallAction()
+                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                            
+                            elif decision == "Call": #only call available
+                                if p < pot_odds and random.random() < 0.7: #fold weaker calls
+                                    return FoldAction()
+                                if p > 0.6 and random.random() < 0.5: #raise stronger calls
+                                    raise_amount = 15
+                                    return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                                return CallAction()
+
+                            elif decision == "Fold": #don't always fold, since sometimes strong
+                                if p > 0.5 and random.random() < 0.3:
+                                    return CallAction()
                                 return FoldAction()
 
                         
 
                     else:
                         #raise beyond first raise: BB 5TH BET
-                        print("CONTINUED RAISE, 5BETTING AS BIG BLIND")
 
-                        raise_amount = 400 #all in
+                        hand = self.hand_convert(card1, card2)
+                        look_up = hand[0] + hand[1]
+
+                        if look_up in self.five_betranges:
+                            decision = self.five_betranges[look_up]
+                            print("five bet ranges")
+                            raise_percentage = decision[0]
+                            call_percentage = decision[1]
+                            fold_percentage = decision[2]
+
+                            raise_threshold = raise_percentage
+                            call_threshold = raise_threshold + call_percentage
+                            fold_threshold = call_threshold + fold_percentage
+
+
+                            x = random.random()
+                            print(x)
+
+                            if x <= raise_threshold:
+                                decision = "Raise"
+                            elif x <= call_threshold:
+                                decision = "Call"
+                            elif x <= fold_threshold:
+                                decision = "Fold"
+                            print(decision)
+
+                            if decision == "Raise": #go all in!
+                                raise_amount = int(my_pip + continue_cost + (1.25)*(pot_total + continue_cost))
+                                if p > 0.5 and random.random() < 0.5:
+                                    #build pot value!
+                                    return CallAction()
+                                return self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
+                            elif decision == "Call":
+                                return CallAction()
+
+                            elif decision == "Fold":
+                                return FoldAction()
+
+                        raise_amount =  int(my_pip + continue_cost + 0.4*(pot_total + continue_cost))
                     
                         raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
                 
@@ -981,16 +1243,14 @@ class Player(Bot):
                         return my_action
 
                 else: #continue_cost == 0:
-                    print("BIG BLIND OPENING RAISE")
                     #big blind first opening raise: same logic as small blind opening raise, except only raise/check
                     hand = self.hand_convert(card1, card2)
-                    decision = ranges[hand[0]][hand[1]][1]
+                    decision = self.ranges[hand[0]][hand[1]][2]
                 
                     if decision == "Raise":
                         raise_amount = 5
                         self.we_have_firstraised = True
                         temp_action = self.legalize_raise(raise_amount, min_raise, max_raise, my_pip, continue_cost, my_stack, legal_actions)
-                        print(temp_action)
                         return temp_action
                     else:
                         return CheckAction()
@@ -998,6 +1258,8 @@ class Player(Bot):
             
             else: #postflop, 66 percent of pot. normal play
                 raise_amount = int(my_pip + continue_cost + (2/3)*(pot_total + continue_cost))
+                if p > 0.5 and random.random() < 0.5:
+                    raise_amount = int(my_pip + continue_cost + (0.75)*(pot_total + continue_cost))
             
                 raise_amount = max([min_raise, raise_amount]) #biggest one out of min/calculated raise
         
@@ -1034,14 +1296,15 @@ class Player(Bot):
                     #   Fold
                         my_action = FoldAction()
                 
-                else: #pay 0 to play, want to either raise or check
-                    if random.random() < p:
+                else: #pay 0 to play, want to either raise or check. we act first though.
+                    if p > pot_odds and random.random() < (p-0.05):
                         my_action = temp_action
                     else:
                         my_action = CheckAction()
                 
 
                 return my_action
+
 
 if __name__ == '__main__':
     run_bot(Player(), parse_args())
