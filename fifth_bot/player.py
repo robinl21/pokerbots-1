@@ -759,6 +759,7 @@ class Player(Bot):
         opp_contribution = STARTING_STACK - opp_stack  # the number of chips your opponent has contributed to the pot
         
 
+        self.my_cards = my_cards
 
         if my_pip == 1 and continue_cost == 1 and street < 3:
             self.small_blind = True
@@ -770,7 +771,6 @@ class Player(Bot):
         pot_total = my_contribution + opp_contribution
 
         #calculate p of cards: if already calculated for this street 
-        print("street", street)
         if street in self.street_encountered: #already calculated this round, just get
             monte_carlo_p = self.street_encountered[street]
 
@@ -779,7 +779,10 @@ class Player(Bot):
                 monte_carlo_p = self.monte_carlo(my_cards, 100, board_cards)
                 self.street_encountered[street] = monte_carlo_p
             else:
-                monte_carlo_p = self.monte_carlo(my_cards, 500, board_cards)
+                monte_carlo_p = self.monte_carlo_second(my_cards, 250, board_cards)
+                print(self.my_cards)
+                print(board_cards)
+                print(monte_carlo_p)
                 self.street_encountered[street] = monte_carlo_p
 
 
@@ -1036,9 +1039,11 @@ class Player(Bot):
                             my_action = CallAction()
                     else: 
                     #   Fold
+                        if prefix_p > 0.5 and random.random() < 0.5 and scary > 0.2: #later on in the flop, we don't want to always fold
+                            return CallAction()
                         my_action = FoldAction()
                 
-                else: #pay 0 to play, want to either raise or check. #opponent called
+                else: #pay 0 to play, want to either raise or check. #opponent called, more likely to raise
                     if p > 0.5 or random.random() < (p + 0.1):
                         my_action = temp_action
                     else:
@@ -1163,7 +1168,6 @@ class Player(Bot):
 
                         if look_up in self.five_betranges:
                             decision = self.five_betranges[look_up]
-                            print("five bet ranges")
                             raise_percentage = decision[0]
                             call_percentage = decision[1]
                             fold_percentage = decision[2]
@@ -1174,7 +1178,6 @@ class Player(Bot):
 
 
                             x = random.random()
-                            print(x)
 
                             if x <= raise_threshold:
                                 decision = "Raise"
@@ -1182,7 +1185,6 @@ class Player(Bot):
                                 decision = "Call"
                             elif x <= fold_threshold:
                                 decision = "Fold"
-                            print(decision)
 
                             if decision == "Raise": #go all in!
                                 raise_amount = int(my_pip + continue_cost + (1.25)*(pot_total + continue_cost))
@@ -1294,9 +1296,11 @@ class Player(Bot):
                             my_action = CallAction()
                     else: 
                     #   Fold
+                        if prefix_p > 0.5 and random.random() < 0.6 and scary > 0.2:
+                            return CallAction()
                         my_action = FoldAction()
                 
-                else: #pay 0 to play, want to either raise or check. we act first though.
+                else: #pay 0 to play, want to either raise or check. we act first though, raise less often
                     if p > pot_odds and random.random() < (p-0.05):
                         my_action = temp_action
                     else:
